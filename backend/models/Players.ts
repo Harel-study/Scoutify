@@ -52,7 +52,7 @@ const playersSchema = new Schema<IPlayerProfile>(
     },
     currentTeam: {
         type: String,
-        trim: true
+        trim: true,
         default:'',
     },
     contractStatus: {
@@ -60,10 +60,23 @@ const playersSchema = new Schema<IPlayerProfile>(
         enum: ['Free-Agent', 'Under-Contract', 'Loan', 'Retired', 'Transfer Listed', 'Trial'],
         default: 'Free-Agent'
     },
+    isLookingForJob: {
+      type: Boolean,
+      default: true
+    },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: 500
+    },
+    profileImage: {
+      type: String,
+      default: ''
+    }
   },
   {
     timestamps: true
-  },
+  }
 );
 const PlayerProfile = model<IPlayerProfile>('PlayerProfile', playersSchema);
 export default PlayerProfile;
