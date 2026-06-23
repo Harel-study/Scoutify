@@ -5,7 +5,25 @@ import Team from '../models/Teams';
  */
 export const createTeam = async (req: Request, res: Response) => {
   try {
-    const team = await Team.create(req.body);
+    const { name, city, email, biography, recruiting } = req.body;
+    if (!name || !city || !email) {
+      return res.status(400).json({
+        message: 'Name, city and email are required',
+      });
+    }
+    const existingTeam = await Team.findOne({ email });
+    if (existingTeam) {
+      return res.status(400).json({
+        message: 'Team already exists',
+      });
+    }
+    const team = await Team.create({
+      name,
+      city,
+      email,
+      biography,
+      recruiting,
+    });
     res.status(201).json(team);
   } catch (error) {
     res.status(500).json({
@@ -82,6 +100,7 @@ export const deleteTeam = async (req: Request, res: Response) => {
         message: 'Team not found',
       });
     }
+
     res.status(200).json({
       message: 'Team deleted successfully',
     });
