@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 interface IUser {
   email: string;
   password: string;
+  role: 'player' | 'team' | 'staff';  
 }
 const userSchema = new Schema<IUser>({
   email: {
@@ -10,6 +11,11 @@ const userSchema = new Schema<IUser>({
   },
   password: {
     type: String,
+    required: true
+  },
+  role: {
+    type: String,
+    enum: ['player', 'team', 'staff'],
     required: true
   }
 });
