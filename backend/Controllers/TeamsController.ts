@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Team from '../models/Teams';
+import Team from '../models/Team';
 /**
  * יצירת קבוצה חדשה
  */
