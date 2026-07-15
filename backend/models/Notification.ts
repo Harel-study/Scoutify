@@ -16,7 +16,7 @@ import { Schema, model } from 'mongoose';
  *
  * @interface
  */
-interface INotification {
+export interface INotification {
   /** @type {Schema.Types.ObjectId} The user who triggered the notification. */
   sender: Schema.Types.ObjectId;
   /** @type {Schema.Types.ObjectId} The user who will receive the notification. */
