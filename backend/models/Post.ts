@@ -5,37 +5,43 @@
  * Posts can contain text content, optional media attachments, and target roles or locations.
  */
 
-import mongoose, { Schema, Document, Types } from 'mongoose';
+import { Schema, model, Document, Types } from 'mongoose';
 
 /**
  * Represents a media item attached to a post.
+ *
+ * @interface
  */
 export interface IMedia {
-  /** The URL of the uploaded image, video, or document. */
+  /** @type {string} The URL of the uploaded image, video, or document. */
   url: string;
-  /** The type of media content. */
+  /** @type {string} The type of media content. */
   type: 'image' | 'video' | 'document';
 }
 
 /**
  * Represents a post document in the database.
+ *
+ * @interface
  */
 export interface IPost extends Document {
-  /** Reference to the User or Team profile that created the post. */
+  /** @type {Types.ObjectId} Reference to the User or Team profile that created the post. */
   profileId: Types.ObjectId;
-  /** Discriminator field pointing to either the 'User' or 'Team' collection. */
+  /** @type {string} Discriminator field pointing to either the 'User' or 'Team' collection. */
   profileModel: 'User' | 'Team';
-  /** The main text content of the post. */
+  /** @type {string} The main text content of the post. */
   content: string;
-  /** An optional array of media items attached to the post. */
+  /** @type {IMedia[]|undefined} An optional array of media items attached to the post. */
   media?: IMedia[];
-  /** Optional target role or audience for the post. */
+  /** @type {string|undefined} Optional target role or audience for the post. */
   targetRole?: string;
-  /** Optional location associated with the post. */
+  /** @type {string|undefined} Optional location associated with the post. */
   location?: string;
-  /** The date when the post record was created. */
+  /** @type {Types.ObjectId[]} Array of User IDs who have liked this post. */
+  likes: Types.ObjectId[];
+  /** @type {Date} The date when the post record was created. Automatically managed by Mongoose. */
   createdAt: Date;
-  /** The date when the post record was last updated. */
+  /** @type {Date} The date when the post record was last updated. Automatically managed by Mongoose. */
   updatedAt: Date;
 }
 
@@ -56,10 +62,18 @@ const postSchema = new Schema<IPost>({
     },
     targetRole: { type: String, required: false, trim: true },
     location: { type: String, required: false, trim: true },
+    likes: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }]
 }, {
     timestamps: true
 });
 
-const Post = mongoose.model<IPost>('Post', postSchema);
+/**
+ * Represents the Mongoose model for interacting with the posts collection.
+ *
+ * Use this model to query, create, or update post data.
+ *
+ * @class
+ */
+const Post = model<IPost>('Post', postSchema);
 
 export default Post;
