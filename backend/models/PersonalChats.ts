@@ -5,16 +5,16 @@
  * Tracks senders, receivers, and the main text content of the messages.
  */
 
-import mongoose, { Schema, Document } from 'mongoose';
+import { Schema, model, Document, Types } from 'mongoose';
 
 /**
  * Represents a personal chat document in the database.
  */
 export interface IPersonalChat extends Document {
   /** The identifier or name of the sender */
-  sender: string;
+  sender: Types.ObjectId;
   /** The identifier or name of the receiver */
-  receiver: string;
+  receiver: Types.ObjectId;
   /** The text content of the message */
   content: string;
   /** The date when the message record was created. */
@@ -28,14 +28,14 @@ export interface IPersonalChat extends Document {
  */
 const personalChatSchema = new Schema<IPersonalChat>({
     sender: { 
-        type: String, 
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true, 
-        trim: true 
     },
     receiver: { 
-        type: String, 
+        type: Schema.Types.ObjectId, 
+        ref: 'User',
         required: true, 
-        trim: true 
     },
     content: { 
         type: String, 
@@ -47,6 +47,6 @@ const personalChatSchema = new Schema<IPersonalChat>({
     timestamps: true 
 });
 
-const PersonalChat = mongoose.model<IPersonalChat>('PersonalChat', personalChatSchema);
+const PersonalChat = model<IPersonalChat>('PersonalChat', personalChatSchema);
 
 export default PersonalChat;
