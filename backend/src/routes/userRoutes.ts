@@ -7,7 +7,7 @@ import {
   getUserById,
   getAllUsers,
   deleteUser
-} from '../Controllers/userController';
+} from '../Controllers/profileController';
 const router = express.Router();
 /**
  * הרשמת משתמש חדש
