@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "commonjs",
+    "module": "NodeNext",
     "lib": ["es2022"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "moduleResolution": "node",
+    "rootDir": ".",
+    "moduleResolution": "NodeNext",
     "resolveJsonModule": true
   },
   "include": ["src/**/*", "seed.ts"]
