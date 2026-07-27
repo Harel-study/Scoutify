@@ -3,8 +3,7 @@ import {
   getUserById,
   getAllUsers,
   deleteUser
-} from '../controllers/profileController';
-
+}from '../controllers/userController';
 import { authenticateJWT } from '../middleware/auth';
 
 const router = Router();

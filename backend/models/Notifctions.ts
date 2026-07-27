@@ -1,7 +1,7 @@
-import { Schema, model } from 'mongoose';
-interface INotification {
-  sender: Schema.Types.ObjectId;
-  receiver: Schema.Types.ObjectId;
+import { Schema, model, Types } from 'mongoose';
+export interface INotification {
+  sender: Types.ObjectId;
+  receiver: Types.ObjectId;
   type:
     | 'message'
     | 'connection_request'
