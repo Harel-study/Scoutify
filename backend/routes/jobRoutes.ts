@@ -1,17 +1,23 @@
-import express from 'express';
+import { Router } from 'express';
 import {
-    createJob, 
-    getAllJobs, 
-    getJobById, 
-    updateJob, 
-    deleteJob
-} from '../Controllers/jobController';
+  createJob,
+  getAllJobs,
+  getJobById,
+  updateJob,
+  deleteJob
+} from '../controllers/jobController';
 
-const router = express.Router();
+import { authenticateJWT, authorizeRoles } from '../middleware/auth';
 
-router.post('/', createJob);
+const router = Router();
+
+// Apply JWT authentication to all job endpoints
+router.use(authenticateJWT);
+
 router.get('/', getAllJobs);
+router.post('/', authorizeRoles('team', 'staff'), createJob);
 router.get('/:id', getJobById);
 router.put('/:id', updateJob);
 router.delete('/:id', deleteJob);
+
 export default router;
