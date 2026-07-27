@@ -36,7 +36,6 @@ export const createJob = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ message: 'שגיאה בפרסום המשרה', error: error.message });
     }
 };
-
 /**
  * קבלת רשימת משרות (כולל סינונים ללוח המשרות)
  * GET /api/jobs
@@ -57,28 +56,23 @@ export const getAllJobs = async (req: Request, res: Response): Promise<void> => 
         if (city) {
             filter.city = { $regex: String(city), $options: 'i' };
         }
-
         // סינון לפי סוג משרה (Full-Time, Part-Time וכו')
         if (jobType) {
             filter.jobType = String(jobType);
         }
-
         // סינון לפי מפרסם ספציפי (למשל, כדי להציג לקבוצה את כל המשרות שהיא עצמה פרסמה)
         if (profileId) {
             filter.profileId = String(profileId);
         }
-
         // שליפת המשרות וביצוע Populate דינמי לפרטי המפרסם
         const jobs = await Job.find(filter)
             .sort({ createdAt: -1 }) // הצגת המשרות החדשות ביותר למעלה
             .populate('profileId');
-
         res.status(200).json(jobs);
     } catch (error: any) {
         res.status(500).json({ message: 'שגיאה בקבלת רשימת המשרות', error: error.message });
     }
 };
-
 /**
  * קבלת פרטי משרה בודדת לפי מזהה (ID)
  * GET /api/jobs/:id
@@ -95,7 +89,6 @@ export const getJobById = async (req: Request, res: Response): Promise<void> => 
         res.status(500).json({ message: 'שגיאה בקבלת נתוני המשרה', error: error.message });
     }
 };
-
 /**
  * עדכון פרטי משרה קיימת (או סגירת משרה על ידי שינוי ה-status)
  * PUT /api/jobs/:id
@@ -114,13 +107,11 @@ export const updateJob = async (req: Request, res: Response): Promise<void> => {
             res.status(404).json({ message: 'המשרה לא נמצאה' });
             return;
         }
-
         res.status(200).json(updatedJob);
     } catch (error: any) {
         res.status(500).json({ message: 'שגיאה בעדכון המשרה', error: error.message });
     }
 };
-
 /**
  * מחיקת משרה מהמערכת
  * DELETE /api/jobs/:id
