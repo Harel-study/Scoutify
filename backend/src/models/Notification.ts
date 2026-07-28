@@ -5,52 +5,57 @@
  * Handles the structure for various notification types such as messages,
  * connection requests, and profile interactions.
  */
-import { Schema, model } from 'mongoose';
+
+import { Schema, model, Types } from 'mongoose';
 
 /**
  * Represents the structure of a Notification document in the database.
- *
- * Encapsulates the core fields required to display a notification to a user,
- * including who triggered it, what type of event occurred, and a link to
- * the relevant content.
- *
- * @interface
  */
 export interface INotification {
-  /** @type {Schema.Types.ObjectId} The user who triggered the notification. */
-  sender: Schema.Types.ObjectId;
-  /** @type {Schema.Types.ObjectId} The user who will receive the notification. */
-  receiver: Schema.Types.ObjectId;
-  /** @type {string} The category of the notification event. */
+  /** The user who triggered the notification. */
+  sender: Types.ObjectId;
+
+  /** The user who will receive the notification. */
+  receiver: Types.ObjectId;
+
+  /** The category of the notification event. */
   type:
     | 'message'
     | 'connection_request'
     | 'job_application'
     | 'profile_view'
     | 'post_like';
-  /** @type {string} The main text content or message of the notification. */
+
+  /** The main text content of the notification. */
   content: string;
-  /** @type {string|undefined} An optional URL or path to navigate to when the notification is clicked. */
+
+  /** Optional URL/path related to the notification. */
   sourceLink?: string;
-  /** @type {boolean} Indicates whether the user has viewed this notification. */
+
+  /** Indicates whether the notification has been read. */
   isRead: boolean;
-  /** @type {Date} When the notification was created. Automatically managed by Mongoose. */
+
+  /** Automatically managed by Mongoose. */
   createdAt: Date;
-  /** @type {Date} When the notification was last updated. Automatically managed by Mongoose. */
+
+  /** Automatically managed by Mongoose. */
   updatedAt: Date;
 }
+
 const notificationSchema = new Schema<INotification>(
   {
     sender: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true
+      required: true,
     },
+
     receiver: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true
+      required: true,
     },
+
     type: {
       type: String,
       required: true,
@@ -59,35 +64,36 @@ const notificationSchema = new Schema<INotification>(
         'connection_request',
         'job_application',
         'profile_view',
-        'post_like'
-      ]
+        'post_like',
+      ],
     },
+
     content: {
       type: String,
       required: true,
       trim: true,
-      maxlength: 500
+      maxlength: 500,
     },
+
     sourceLink: {
       type: String,
-      default: ''
+      default: '',
     },
 
     isRead: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 /**
- * Represents the Mongoose model for interacting with the notifications collection.
- *
- * Use this model to query, create, or update user notifications.
- *
- * @class
+ * Mongoose model for notifications.
  */
-const Notification = model<INotification>('Notification', notificationSchema);
+const Notification = model<INotification>(
+  'Notification',
+  notificationSchema
+);
 export default Notification;

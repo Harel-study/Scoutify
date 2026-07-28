@@ -7,7 +7,7 @@
  */
 import { Response, NextFunction } from 'express';
 import { AuthenticatedRequest } from '../middleware/auth';
-import PersonalChat from '../models/PersonalChat';
+import PersonalChat, { IPersonalChat } from '../models/PersonalChats';
 import User from '../models/User';
 import PlayerProfile from '../models/PlayerProfile';
 import Team from '../models/Team';

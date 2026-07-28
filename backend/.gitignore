@@ -30,3 +30,11 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+node_modules/
+**/node_modules/
+
+Backend_BACKUP/
+backend_BACKUP/
+
+.env
+*.log

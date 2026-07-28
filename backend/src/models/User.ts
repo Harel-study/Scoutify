@@ -9,59 +9,80 @@ export interface IUser {
   googleId?: string;
   createdAt: Date;
   updatedAt: Date;
+
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
-const userSchema = new Schema<IUser>({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true
-  },
-  email: {
-    type: String, 
-    unique: true, 
-    sparse: true,
-    lowercase: true, 
-    trim: true 
-  },
-  password: {
-    type: String, 
-    required: function(this: any) {
-      // Password is required only if googleId is not provided
+const userSchema = new Schema<IUser>(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+
+    email: {
+      type: String,
+      unique: true,
+      sparse: true,
+      lowercase: true,
+      trim: true,
+    },
+
+    password: {
+      type: String,
+      required: function (this: IUser): boolean {
       return !this.googleId;
-    }
-  },
-  role: {
-    type: String,
-    enum: ['player', 'team', 'staff'],
-    required: true
-  },
-  googleId: {
-    type: String,
-    sparse: true // Allows multiple null/undefined values while ensuring uniqueness for existing IDs
   }
-}, {timestamps: true});
-// Pre-save hook to hash password if modified
-userSchema.pre('save', async function(next) {
+},
+
+    role: {
+      type: String,
+      enum: ['player', 'team', 'staff'],
+      required: true,
+    },
+
+    googleId: {
+      type: String,
+      sparse: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+/**
+ * Hash password before saving
+ */
+userSchema.pre('save', async function () {
   if (!this.isModified('password') || !this.password) {
-    return next();
+    return;
   }
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error: any) {
-    next(error);
-  }
+
+  const salt = await bcrypt.genSalt(10);
+
+  this.password = await bcrypt.hash(
+    this.password,
+    salt
+  );
 });
+/**
+ * Compare candidate password with stored hash
+ */
+userSchema.methods.comparePassword = async function (
+  candidatePassword: string
+): Promise<boolean> {
+  if (!this.password) {
+    return false;
+  }
 
-// Instance method to check password
-userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  if (!this.password) return false;
-  return bcrypt.compare(candidatePassword, this.password);
+  return bcrypt.compare(
+    candidatePassword,
+    this.password
+  );
 };
-
 const User = model<IUser>('User', userSchema);
 export default User;
