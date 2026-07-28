@@ -81,7 +81,7 @@ export const Feed: React.FC = () => {
         >
           <div className="flex items-start space-x-3">
             <div className="w-10 h-10 rounded-full bg-brand-500 text-white font-extrabold flex items-center justify-center shrink-0">
-              {(user.username || user.email)[0].toUpperCase()}
+             {(user.username || user.email || '?').charAt(0).toUpperCase()}
             </div>
             <div className="flex-1">
               <textarea

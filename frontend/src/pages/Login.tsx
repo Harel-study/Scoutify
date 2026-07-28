@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Lock, LogIn, Chrome, AlertCircle } from 'lucide-react';
-
+import { User, Lock, LogIn, AlertCircle } from 'lucide-react';
+import { FcGoogle } from 'react-icons/fc';
 export const Login: React.FC = () => {
   const { login, googleLogin } = useAuth();
   const [username, setUsername] = useState('');
@@ -151,7 +151,7 @@ export const Login: React.FC = () => {
               onClick={() => setShowGoogleMock(true)}
               className="w-full border border-dark-200 dark:border-dark-700 hover:bg-dark-50 dark:hover:bg-dark-800 text-dark-900 dark:text-white font-medium py-3 px-4 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 active:scale-98"
             >
-              <Chrome className="w-5 h-5 text-red-400" />
+              <FcGoogle className="w-5 h-5" />
               <span>Sign in with Google</span>
             </button>
           ) : (
