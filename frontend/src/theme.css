@@ -1,0 +1,20 @@
+/* Centralized Theme Style Configurations */
+
+/* Input text fields */
+.theme-input {
+  @apply bg-dark-50 dark:bg-dark-900 border border-dark-200 dark:border-dark-700 text-dark-900 dark:text-white placeholder-dark-500 focus:outline-none focus:border-brand-500 transition duration-200;
+}
+
+/* Select dropdown fields */
+.theme-select {
+  @apply bg-dark-50 dark:bg-dark-900 border border-dark-200 dark:border-dark-700 text-dark-900 dark:text-white focus:outline-none focus:border-brand-500 transition duration-200 cursor-pointer;
+}
+
+.theme-select option {
+  @apply bg-white dark:bg-dark-800 text-dark-900 dark:text-white;
+}
+
+/* Textarea multiline input fields */
+.theme-textarea {
+  @apply bg-dark-50 dark:bg-dark-900 border border-dark-200 dark:border-dark-700 text-dark-900 dark:text-white placeholder-dark-500 focus:outline-none focus:border-brand-500 transition duration-200 resize-none;
+}
