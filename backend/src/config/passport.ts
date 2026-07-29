@@ -11,6 +11,14 @@ export interface GoogleTokenPayload {
 export const verifyGoogleToken = async (
   idToken: string
 ): Promise<GoogleTokenPayload> => {
+  if (process.env.NODE_ENV !== 'production' && idToken.startsWith('mock_')) {
+    return {
+      googleId: idToken,
+      email: `${idToken}@mock.scoutify.com`,
+      name: `Mock ${idToken.replace('mock_', '')}`,
+    };
+  }
+
   if (!process.env.GOOGLE_CLIENT_ID) {
     throw new Error('GOOGLE_CLIENT_ID is not configured');
   }

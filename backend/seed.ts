@@ -1,15 +1,15 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import User from './src/models/User';
-import PlayerProfile from './src/models/PlayerProfile';
-import Team from './src/models/Team';
-import StaffProfile from './src/models/StaffProfile';
-import Job from './src/models/Job';
-import Post from './src/models/Post';
-import PersonalChat from './src/models/PersonalChat';
-import Notification from './src/models/Notification';
-import RefreshToken from './src/models/RefreshToken';
-import logger from './src/config/logger';
+import User from './src/models/User.js';
+import PlayerProfile from './src/models/PlayerProfile.js';
+import Team from './src/models/Team.js';
+import StaffProfile from './src/models/StaffProfile.js';
+import Job from './src/models/Job.js';
+import Post from './src/models/Post.js';
+import PersonalChat from './src/models/PersonalChat.js';
+import Notification from './src/models/Notification.js';
+import RefreshToken from './src/models/RefreshToken.js';
+import logger from './src/config/logger.js';
 
 dotenv.config();
 

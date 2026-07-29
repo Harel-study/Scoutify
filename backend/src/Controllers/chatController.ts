@@ -6,14 +6,14 @@
  * conversation overviews containing the latest messages and partner details.
  */
 import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from '../middleware/auth';
-import PersonalChat, { IPersonalChat } from '../models/PersonalChats';
-import User from '../models/User';
-import PlayerProfile from '../models/PlayerProfile';
-import Team from '../models/Team';
-import StaffProfile from '../models/StaffProfile';
-import Notification from '../models/Notification';
-import { chatSchema } from '../validation/joiSchemas';
+import { AuthenticatedRequest } from '../middleware/auth.js';
+import PersonalChat, { IPersonalChat } from '../models/PersonalChat.js';
+import User from '../models/User.js';
+import PlayerProfile from '../models/PlayerProfile.js';
+import Team from '../models/Team.js';
+import StaffProfile from '../models/StaffProfile.js';
+import Notification from '../models/Notification.js';
+import { chatSchema } from '../validation/joiSchemas.js';
 
 /**
  * Dispatches a direct message to another user.

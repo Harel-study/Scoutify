@@ -12,7 +12,7 @@ import { errorHandler } from './middleware/error.js';
 import authRoutes from './routes/authRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
-import postRoutes from './routes/postRoutes.js';
+import postRoutes from './routes/PostRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 

@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { createPost, listPosts, deletePost, toggleLikePost } from '../controllers/PostController';
-import { authenticateJWT } from '../middleware/auth';
-import upload from '../middleware/upload';
+import { createPost, listPosts, deletePost, toggleLikePost } from '../Controllers/postController.js';
+import { authenticateJWT } from '../middleware/auth.js';
+import upload from '../middleware/upload.js';
 
 const router = Router();
 
