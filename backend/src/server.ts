@@ -1,25 +1,82 @@
 import express from 'express';
-import mongoose from 'mongoose';
+import helmet from 'helmet';
+import cors from 'cors';
+import morgan from 'morgan';
 import dotenv from 'dotenv';
-import userRoutes from '../routes/userRoutes';
-import teamRoutes from '../routes/TeamsRoutes';
-import jobRoutes from '../routes/jobRoutes';
-import PostRoutes from '../routes/PostRoutes';
+import { connectDB } from './config/db.js';
+import logger from './config/logger.js';
+import { apiLimiter } from './middleware/rateLimiter.js';
+import { errorHandler } from './middleware/error.js';
+
+// Import Routes
+import authRoutes from './routes/authRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
+import jobRoutes from './routes/jobRoutes.js';
+import postRoutes from './routes/postRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+
+// Load environment variables
 dotenv.config();
+
+// Connect to Database
+connectDB();
+
 const app = express();
-mongoose.connect(process.env.MONGODB_URI as string)
-  .then(() => {
-    console.log('Connected to MongoDB');
-  })
-  .catch((error: unknown) => {
-    console.error('Error connecting to MongoDB:', error);
-  });
+const PORT = process.env.PORT || 5000;
+
+// Security Middleware
+app.use(helmet({
+  crossOriginResourcePolicy: false // Allows loading assets cross-origin if serving statically
+}));
+
+// CORS Configuration
+const allowedOrigins = [
+  process.env.CLIENT_URL || 'http://localhost:5173',
+  'https://scoutify-frontend.vercel.app' // Example placeholder for Vercel deployment
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Crucial for reading HTTPOnly cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
+}));
+
+// Morgan HTTP Logger
+app.use(morgan('dev'));
+
+// Body Parser Middlewares
 app.use(express.json());
-app.use('/api/users', userRoutes);
-app.use('/api/teams', teamRoutes);
+app.use(express.urlencoded({ extended: true }));
+
+// Apply general API Rate Limiter
+app.use('/api', apiLimiter);
+
+// Mount API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/profiles', profileRoutes);
 app.use('/api/jobs', jobRoutes);
-app.use('/api/posts', PostRoutes);
-const PORT = process.env.PORT || 3000;
+app.use('/api/posts', postRoutes);
+app.use('/api/chats', chatRoutes);
+app.use('/api/notifications', notificationRoutes);
+
+// Health Check Endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date() });
+});
+
+// Global Error Handler Middleware
+app.use(errorHandler);
+
+// Start Server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  logger.info(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
