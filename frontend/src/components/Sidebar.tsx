@@ -17,7 +17,7 @@ export const Sidebar: React.FC = () => {
   ];
 
   return (
-    <aside className="w-full md:w-64 bg-white dark:bg-dark-800 border-r border-dark-200 dark:border-dark-700 h-auto md:h-[calc(100vh-4rem)] p-4 flex flex-col justify-between shrink-0 transition-colors duration-200">
+    <aside className="hidden md:flex w-64 bg-white dark:bg-dark-800 border-r border-dark-200 dark:border-dark-700 h-[calc(100vh-4rem)] p-4 flex-col justify-between shrink-0 transition-colors duration-200">
       <div className="space-y-1">
         {links.map((link) => {
           const Icon = link.icon;

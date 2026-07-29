@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Sun, Moon, Bell, MessageSquare, LogOut, Check } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Sun, Moon, Bell, MessageSquare, LogOut, Check, Menu, X } from 'lucide-react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../utils/axios';
 
 export const Navbar: React.FC = () => {
@@ -10,7 +10,9 @@ export const Navbar: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
@@ -72,7 +74,18 @@ export const Navbar: React.FC = () => {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Mobile Menu Button */}
+            {user && (
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 text-dark-500 hover:text-dark-900 dark:text-dark-400 dark:hover:text-white rounded-xl hover:bg-dark-100 dark:hover:bg-dark-800 transition duration-200"
+                aria-label="Toggle Mobile Menu"
+              >
+                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            )}
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
@@ -84,13 +97,6 @@ export const Navbar: React.FC = () => {
 
             {user && (
               <>
-                {/* Chat shortcut */}
-                <button
-                  onClick={() => navigate('/messages')}
-                  className="p-2 text-dark-500 hover:text-dark-900 dark:text-dark-400 dark:hover:text-white rounded-xl hover:bg-dark-100 dark:hover:bg-dark-800 transition duration-200"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                </button>
 
                 {/* Notifications dropdown trigger */}
                 <div className="relative">
@@ -157,6 +163,17 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && user && (
+        <div className="md:hidden absolute top-16 left-0 w-full bg-white dark:bg-dark-900 border-b border-dark-200 dark:border-dark-800 shadow-xl py-4 px-4 flex flex-col space-y-2 animate-fade-in">
+          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className={`px-4 py-3 text-sm font-medium rounded-xl transition-colors ${location.pathname === '/' ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20' : 'text-dark-600 dark:text-dark-300 hover:bg-dark-100 dark:hover:bg-dark-800'}`}>Feed</Link>
+          <Link to="/jobs" onClick={() => setIsMobileMenuOpen(false)} className={`px-4 py-3 text-sm font-medium rounded-xl transition-colors ${location.pathname.startsWith('/jobs') ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20' : 'text-dark-600 dark:text-dark-300 hover:bg-dark-100 dark:hover:bg-dark-800'}`}>Job Board</Link>
+          <Link to="/scout" onClick={() => setIsMobileMenuOpen(false)} className={`px-4 py-3 text-sm font-medium rounded-xl transition-colors ${location.pathname.startsWith('/scout') ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20' : 'text-dark-600 dark:text-dark-300 hover:bg-dark-100 dark:hover:bg-dark-800'}`}>Scouting Hub</Link>
+          <Link to="/messages" onClick={() => setIsMobileMenuOpen(false)} className={`px-4 py-3 text-sm font-medium rounded-xl transition-colors ${location.pathname.startsWith('/messages') ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20' : 'text-dark-600 dark:text-dark-300 hover:bg-dark-100 dark:hover:bg-dark-800'}`}>Direct Messages</Link>
+          <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)} className={`px-4 py-3 text-sm font-medium rounded-xl transition-colors ${location.pathname.startsWith('/profile') ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/20' : 'text-dark-600 dark:text-dark-300 hover:bg-dark-100 dark:hover:bg-dark-800'}`}>My Profile</Link>
+        </div>
+      )}
     </nav>
   );
 };
