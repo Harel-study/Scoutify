@@ -26,9 +26,10 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<void>;
   register: (
     username: string,
+    email: string,
     password: string,
     role: 'player' | 'team' | 'staff'
-  ) => Promise<void>;
+) => Promise<void>;
   googleLogin: (
     idToken: string,
     role?: 'player' | 'team' | 'staff'
@@ -119,44 +120,42 @@ export const AuthProvider: React.FC<{
     }
   };
 
-  const register = async (
-    username: string,
-    password: string,
-    role: 'player' | 'team' | 'staff'
-  ): Promise<void> => {
-    setLoading(true);
+ const register = async (
+  username: string,
+  email: string,
+  password: string,
+  role: 'player' | 'team' | 'staff'
+): Promise<void> => {
+  setLoading(true);
 
-    try {
-      const response = await api.post('/auth/register', {
-        username,
-        password,
-        role,
-      });
-
-      const { accessToken, user: registeredUser } = response.data;
-
-      localStorage.setItem('accessToken', accessToken);
-      setUser(registeredUser);
-    } catch (err: any) {
-      console.error('Registration error:', {
-        message: err.message,
-        status: err.response?.status,
-        data: err.response?.data,
-        baseURL: err.config?.baseURL,
-        url: err.config?.url,
-      });
-
-      throw new Error(
-        err.response?.data?.message ||
-          err.response?.data?.error ||
-          err.message ||
-          'Registration failed'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  try {
+    const response = await api.post('/auth/register', {
+      username,
+      email,
+      password,
+      role,
+    });
+    const { accessToken, user: registeredUser } = response.data;
+    localStorage.setItem('accessToken', accessToken);
+    setUser(registeredUser);
+  } catch (err: any) {
+    console.error('Registration error:', {
+      message: err.message,
+      status: err.response?.status,
+      data: err.response?.data,
+      baseURL: err.config?.baseURL,
+      url: err.config?.url,
+    });
+    throw new Error(
+      err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        'Registration failed'
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   const googleLogin = async (
     idToken: string,
     role?: 'player' | 'team' | 'staff'

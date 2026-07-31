@@ -14,9 +14,23 @@ import Joi from 'joi';
  * and restricts the role to allowed user types.
  */
 export const registerSchema = Joi.object({
-  username: Joi.string().min(3).max(30).required().lowercase().trim(),
-  password: Joi.string().min(6).required(),
-  role: Joi.string().valid('player', 'team', 'staff').required()
+  username: Joi.string()
+    .min(3)
+    .max(30)
+    .required()
+    .lowercase()
+    .trim(),
+  email: Joi.string()
+    .email()
+    .required()
+    .lowercase()
+    .trim(),
+  password: Joi.string()
+    .min(6)
+    .required(),
+  role: Joi.string()
+    .valid('player', 'team', 'staff')
+    .required()
 });
 
 /**

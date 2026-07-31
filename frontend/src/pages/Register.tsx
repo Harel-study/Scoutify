@@ -19,7 +19,7 @@ export const Register: React.FC = () => {
     setError('');
     setLoading(true);
     try {
-      await register(username, password, role);
+      await register(username, email, password, role);
       navigate('/');
     } catch (err: any) {
       setError(err.message || 'Registration failed');
@@ -92,7 +92,30 @@ export const Register: React.FC = () => {
                 />
               </div>
             </div>
-
+            <div>
+  <label
+    htmlFor="email"
+    className="text-xs font-bold text-dark-600 dark:text-dark-300 uppercase tracking-wider block mb-2"
+  >
+    Email
+  </label>
+  <div className="relative">
+    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark-500">
+      <Mail className="w-5 h-5" />
+    </div>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      autoComplete="email"
+      required
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      className="block w-full pl-11 pr-4 py-3 text-sm rounded-2xl theme-input"
+      placeholder="name@example.com"
+    />
+  </div>
+</div>
             <div>
               <label htmlFor="password" className="text-xs font-bold text-dark-600 dark:text-dark-300 uppercase tracking-wider block mb-2">
                 Password

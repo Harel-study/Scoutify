@@ -272,11 +272,6 @@ export const applyToJob = async (req: AuthenticatedRequest, res: Response, next:
       const staffProfile = await StaffProfile.findOne({ userID: id });
       if (staffProfile && staffProfile.cvUrl) {
         cvLink = staffProfile.cvUrl;
-      } else {
-        const teamProfile = await Team.findOne({ userID: id });
-        if (teamProfile && teamProfile.cvUrl) {
-           cvLink = teamProfile.cvUrl;
-        }
       }
     }
 

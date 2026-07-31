@@ -24,12 +24,15 @@ const userSchema = new Schema<IUser>(
     },
 
     email: {
-      type: String,
-      unique: true,
-      sparse: true,
-      lowercase: true,
-      trim: true,
-    },
+    type: String,
+    required: function (this: IUser): boolean {
+    return !this.googleId;
+  },
+    unique: true,
+    sparse: true,
+    lowercase: true,
+    trim: true,
+},
 
     password: {
       type: String,

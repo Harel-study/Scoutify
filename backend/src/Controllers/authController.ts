@@ -110,25 +110,56 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       return res.status(400).json({ message: error.details[0].message });
     }
 
-    const { username, password, role } = value;
+    const { username, email, password, role } = value;
 
     // Check if user already exists
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({
+      $or: [{ username }, { email }]
+    });
+
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists with this username' });
+      if (existingUser.username === username) {
+        return res.status(400).json({
+          message: 'User already exists with this username'
+        });
+      }
+
+      return res.status(400).json({
+        message: 'User already exists with this email'
+      });
     }
 
     // Create User
-    const user = new User({ username, password, role });
+    const user = new User({
+      username,
+      email,
+      password,
+      role
+    });
+
     await user.save();
 
     // Create a blank profile corresponding to the role
     if (role === 'player') {
-      await new PlayerProfile({ userID: user._id, position: 'Central Midfielder', preferredFoot: 'Both' }).save();
+      await new PlayerProfile({
+        userID: user._id,
+        position: 'Central Midfielder',
+        preferredFoot: 'Both'
+      }).save();
     } else if (role === 'team') {
-      await new Team({ userID: user._id, name: 'My Club', city: 'My City', email: `${username}@scoutify.com`, recruiting: false }).save();
+      await new Team({
+        userID: user._id,
+        name: 'My Club',
+        city: 'My City',
+        email,
+        recruiting: false
+      }).save();
     } else if (role === 'staff') {
-      await new StaffProfile({ userID: user._id, roleDescription: 'Coach', isLookingForJob: true }).save();
+      await new StaffProfile({
+        userID: user._id,
+        roleDescription: 'Coach',
+        isLookingForJob: true
+      }).save();
     }
 
     // Generate tokens
@@ -136,21 +167,30 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const refreshToken = generateRefreshToken(user);
 
     // Save refresh token to DB
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    await RefreshToken.create({ token: refreshToken, userId: user._id, expiresAt });
-
+    const expiresAt = new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000
+    );
+    await RefreshToken.create({
+      token: refreshToken,
+      userId: user._id,
+      expiresAt
+    });
     // Set cookie and return
     setRefreshTokenCookie(res, refreshToken);
     res.status(201).json({
       message: 'Registration successful',
       accessToken,
-      user: { id: user._id, username: user.username, role: user.role }
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
     });
   } catch (err) {
     next(err);
   }
 };
-
 /**
  * Authenticates a user with a username and password.
  *
