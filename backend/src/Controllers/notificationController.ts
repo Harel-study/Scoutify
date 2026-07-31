@@ -7,8 +7,8 @@
 
 import { Response, NextFunction } from 'express';
 import { Types } from 'mongoose';
-import { AuthenticatedRequest } from '../middleware/auth';
-import Notification from '../models/Notification';
+import { AuthenticatedRequest } from '../middleware/auth.js';
+import Notification from '../models/Notification.js';
 
 /**
  * Retrieves all notifications for the authenticated user.

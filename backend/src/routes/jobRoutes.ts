@@ -6,8 +6,8 @@ import {
   updateJob,
   deleteJob,
   applyToJob
-} from '../controllers/JobController';
-import { authenticateJWT, authorizeRoles } from '../middleware/auth';
+} from '../controllers/JobController.js';
+import { authenticateJWT, authorizeRoles } from '../middleware/auth.js';
 
 const router = Router();
 

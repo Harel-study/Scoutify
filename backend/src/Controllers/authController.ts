@@ -6,14 +6,14 @@
  */
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
-import RefreshToken from '../models/RefreshToken';
-import PlayerProfile from '../models/PlayerProfile';
-import Team from '../models/Team';
-import StaffProfile from '../models/StaffProfile';
-import { verifyGoogleToken } from '../config/passport';
-import { registerSchema, loginSchema, googleLoginSchema } from '../validation/joiSchemas';
-import logger from '../config/logger';
+import User from '../models/User.js';
+import RefreshToken from '../models/RefreshToken.js';
+import PlayerProfile from '../models/PlayerProfile.js';
+import Team from '../models/Team.js';
+import StaffProfile from '../models/StaffProfile.js';
+import { verifyGoogleToken } from '../config/passport.js';
+import { registerSchema, loginSchema, googleLoginSchema } from '../validation/joiSchemas.js';
+import logger from '../config/logger.js';
 
 /**
  * Generates a short-lived JSON Web Token (JWT) for API access.

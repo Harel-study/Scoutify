@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { sendMessage, getMessageHistory, getConversations } from '../controllers/chatController';
-import { authenticateJWT } from '../middleware/auth';
+import { sendMessage, getMessageHistory, getConversations } from '../controllers/chatController.js';
+import { authenticateJWT } from '../middleware/auth.js';
 
 const router = Router();
 

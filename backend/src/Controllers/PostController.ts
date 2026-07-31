@@ -5,12 +5,12 @@
  * Manages media uploads to Cloudinary and dispatching notifications for likes.
  */
 import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from '../middleware/auth';
-import Post, { IMedia } from '../models/Post';
-import Team from '../models/Team';
-import Notification from '../models/Notification';
-import { uploadToCloudinary } from '../config/cloudinary';
-import { postSchema } from '../validation/joiSchemas';
+import { AuthenticatedRequest } from '../middleware/auth.js';
+import Post, { IMedia } from '../models/Post.js';
+import Team from '../models/Team.js';
+import Notification from '../models/Notification.js';
+import { uploadToCloudinary } from '../config/cloudinary.js';
+import { postSchema } from '../validation/joiSchemas.js';
 
 /**
  * Creates a new social feed post.

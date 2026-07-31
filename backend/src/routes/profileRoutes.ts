@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getMe, updateMe, getProfileById, searchProfiles } from '../Controllers/profileController.js';
+import { getMe, updateMe, getProfileById, searchProfiles } from '../controllers/profileController.js';
 import { authenticateJWT } from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
 

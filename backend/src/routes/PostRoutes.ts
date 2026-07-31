@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPost, listPosts, deletePost, toggleLikePost } from '../Controllers/postController.js';
+import { createPost, listPosts, deletePost, toggleLikePost } from '../controllers/postController.js';
 import { authenticateJWT } from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
 
