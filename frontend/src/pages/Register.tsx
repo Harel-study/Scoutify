@@ -6,6 +6,7 @@ import { FcGoogle } from 'react-icons/fc';
 export const Register: React.FC = () => {
   const { register, googleLogin } = useAuth();
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'player' | 'team' | 'staff'>('player');
   const [error, setError] = useState('');
