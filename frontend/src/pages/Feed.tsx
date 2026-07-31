@@ -5,8 +5,8 @@ import { fetchFeed, createPost } from '../store/slices/feedSlice';
 import { FeedCard } from '../components/FeedCard';
 import { CardSkeleton } from '../components/SkeletonLoader';
 import { useAuth } from '../context/AuthContext';
-import { Send, Image, MapPin, Tag, X, FileText } from 'lucide-react';
-
+import { Send, Image, MapPin, Tag, X, FileText, Sparkles } from 'lucide-react';
+import { generateAiPost, type AiPostResult } from '../services/aiService';
 export const Feed: React.FC = () => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
