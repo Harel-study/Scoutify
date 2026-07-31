@@ -1,13 +1,4 @@
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
-import morgan from 'morgan';
-import dotenv from 'dotenv';
-import { connectDB } from './config/db.js';
-import logger from './config/logger.js';
-import { apiLimiter } from './middleware/rateLimiter.js';
-import { errorHandler } from './middleware/error.js';
-
+import 'dotenv/config';
 // Import Routes
 import authRoutes from './routes/authRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
@@ -15,9 +6,18 @@ import jobRoutes from './routes/jobRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
+import { aiRoutes } from './routes/aiRoutes.js';
 
-// Load environment variables
-dotenv.config();
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import morgan from 'morgan';
+import { connectDB } from './config/db.js';
+import logger from './config/logger.js';
+import { apiLimiter } from './middleware/rateLimiter.js';
+import { errorHandler } from './middleware/error.js';
+
+
 
 // Connect to Database
 connectDB();
@@ -67,7 +67,7 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/notifications', notificationRoutes);
-
+app.use('/api/ai', aiRoutes);
 // Health Check Endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date() });

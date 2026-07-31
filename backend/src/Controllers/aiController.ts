@@ -17,13 +17,13 @@ export const improvePost = async (
       return;
     }
 
-    const improvedContent = await improvePostContent(content);
+    const result = await improvePostContent(content);
 
     res.status(200).json({
       success: true,
       data: {
         originalContent: content,
-        improvedContent,
+        ...result,
       },
     });
   } catch (error) {
