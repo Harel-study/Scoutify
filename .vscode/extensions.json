@@ -1,0 +1,8 @@
+{
+  // This file contains a list of recommended VS Code extensions for this workspace.
+  // Users opening this project in VS Code will be prompted to install these extensions.
+  "recommendations": [
+    // Provides Tailwind CSS IntelliSense, including autocomplete, syntax highlighting, and linting.
+    "bradlc.vscode-tailwindcss"
+  ]
+}

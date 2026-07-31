@@ -1,2 +1,8 @@
 {
+  // This file contains workspace-specific VS Code settings.
+  // These settings override the global user settings when working in this project.
+  "files.associations": {
+    // Treat all .css files as Tailwind CSS files for better language support and IntelliSense.
+    "*.css": "tailwindcss"
+  }
 }
