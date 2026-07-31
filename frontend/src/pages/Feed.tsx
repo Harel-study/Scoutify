@@ -11,7 +11,6 @@ export const Feed: React.FC = () => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
   const { posts, loading, error } = useSelector((state: RootState) => state.feed);
-
   const [content, setContent] = useState('');
   const [location, setLocation] = useState('');
   const [targetRole, setTargetRole] = useState('');
@@ -19,6 +18,9 @@ export const Feed: React.FC = () => {
   const [filePreview, setFilePreview] = useState<string>('');
   const [creating, setCreating] = useState(false);
   const [showMetadataInputs, setShowMetadataInputs] = useState(false);
+  const [generatingAi, setGeneratingAi] = useState(false);
+  const [aiResult, setAiResult] = useState<AiPostResult | null>(null);
+  const [aiError, setAiError] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,7 +45,29 @@ export const Feed: React.FC = () => {
     setFilePreview('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
+const handleGenerateWithAi = async (): Promise<void> => {
+  const trimmedContent = content.trim();
 
+  if (!trimmedContent) {
+    setAiError('Please enter player information first.');
+    return;
+  }
+
+  try {
+    setGeneratingAi(true);
+    setAiError('');
+
+    const result = await generateAiPost(trimmedContent);
+
+    setAiResult(result);
+    setContent(result.post);
+  } catch (error) {
+    console.error('AI post generation failed:', error);
+    setAiError('Failed to generate the post with AI.');
+  } finally {
+    setGeneratingAi(false);
+  }
+};
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() && !file) return;
@@ -183,8 +207,16 @@ export const Feed: React.FC = () => {
                 <MapPin className="w-4 h-4" />
                 <span>Tags</span>
               </button>
+              <button
+                type="button"
+                onClick={handleGenerateWithAi}
+                disabled={generatingAi || !content.trim()}
+                className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition duration-150 bg-brand-500/10 text-brand-500 hover:bg-brand-500 hover:text-white"
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>{generatingAi ? 'Generating...' : 'Generate with AI'}</span>
+              </button>
             </div>
-
             <button
               type="submit"
               disabled={creating || (!content.trim() && !file)}
