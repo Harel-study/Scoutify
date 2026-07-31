@@ -54,7 +54,8 @@ export const playerProfileUpdateSchema = Joi.object({
   currentTeam: Joi.string().allow('', null).trim(),
   contractStatus: Joi.string().valid('Free-Agent', 'Under-Contract', 'Loan', 'Retired', 'Transfer Listed', 'Trial'),
   isLookingForJob: Joi.boolean(),
-  bio: Joi.string().max(500).allow('', null).trim()
+  bio: Joi.string().max(500).allow('', null).trim(),
+  deleteCv: Joi.boolean()
 });
 
 /**
@@ -67,7 +68,8 @@ export const teamProfileUpdateSchema = Joi.object({
   city: Joi.string().required().trim(),
   email: Joi.string().email().required().lowercase().trim(),
   biography: Joi.string().max(1000).allow('', null).trim(),
-  recruiting: Joi.boolean()
+  recruiting: Joi.boolean(),
+  deleteCv: Joi.boolean()
 });
 
 /**
@@ -82,7 +84,8 @@ export const staffProfileUpdateSchema = Joi.object({
   certifications: Joi.array().items(Joi.string().trim()).default([]),
   currentTeam: Joi.string().allow('', null).trim(),
   isLookingForJob: Joi.boolean(),
-  bio: Joi.string().max(500).allow('', null).trim()
+  bio: Joi.string().max(500).allow('', null).trim(),
+  deleteCv: Joi.boolean()
 });
 
 /**

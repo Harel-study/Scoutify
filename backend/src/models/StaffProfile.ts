@@ -33,6 +33,10 @@ export interface IStaffProfile {
   createdAt: Date;
   /** @type {Date} When the profile was last modified. Automatically managed by Mongoose. */
   updatedAt: Date;
+  /** @type {string|undefined} A URL pointing to the user's uploaded CV file. */
+  cvUrl?: string;
+  /** @type {string|undefined} The original file name of the user's uploaded CV. */
+  cvName?: string;
 }
 
 const staffProfileSchema = new Schema<IStaffProfile>({
@@ -43,7 +47,9 @@ const staffProfileSchema = new Schema<IStaffProfile>({
   currentTeam: { type: String, trim: true, default: '' },
   isLookingForJob: { type: Boolean, default: true },
   bio: { type: String, trim: true, maxlength: 500 },
-  profileImage: { type: String, default: '' }
+  profileImage: { type: String, default: '' },
+  cvUrl: { type: String, default: '' },
+  cvName: { type: String, default: '' }
 }, { timestamps: true });
 
 /**

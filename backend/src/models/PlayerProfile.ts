@@ -41,6 +41,10 @@ export interface IPlayerProfile {
   createdAt: Date;
   /** @type {Date} When the profile was last modified. Automatically managed by Mongoose. */
   updatedAt: Date;
+  /** @type {string|undefined} A URL pointing to the user's uploaded CV file. */
+  cvUrl?: string;
+  /** @type {string|undefined} The original file name of the user's uploaded CV. */
+  cvName?: string;
 }
 const playerProfileSchema = new Schema<IPlayerProfile>(
   {
@@ -100,6 +104,14 @@ const playerProfileSchema = new Schema<IPlayerProfile>(
       maxlength: 500
     },
     profileImage: {
+      type: String,
+      default: ''
+    },
+    cvUrl: {
+      type: String,
+      default: ''
+    },
+    cvName: {
       type: String,
       default: ''
     }

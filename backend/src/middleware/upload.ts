@@ -14,6 +14,8 @@ const ALLOWED_MIME_TYPES = [
   'video/mpeg',
   'video/quicktime',
   'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 
 // 3. הגדרת מנגנון העלאת הקבצים

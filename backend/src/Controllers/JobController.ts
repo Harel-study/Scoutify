@@ -5,11 +5,14 @@
  * deleting, and applying to job postings.
  */
 import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from '../middleware/auth';
-import Job from '../models/Job';
-import Team from '../models/Team';
-import Notification from '../models/Notification';
-import { jobSchema } from '../validation/joiSchemas';
+import { AuthenticatedRequest } from '../middleware/auth.js';
+import Job from '../models/Job.js';
+import Team from '../models/Team.js';
+import PlayerProfile from '../models/PlayerProfile.js';
+import StaffProfile from '../models/StaffProfile.js';
+import PersonalChat from '../models/PersonalChat.js';
+import Notification from '../models/Notification.js';
+import { jobSchema } from '../validation/joiSchemas.js';
 
 /**
  * Creates a new job posting for a team or staff member.
@@ -259,6 +262,36 @@ export const applyToJob = async (req: AuthenticatedRequest, res: Response, next:
     });
 
     await notification.save();
+
+    // Fetch the applicant's profile to get their CV if it exists
+    let cvLink = '';
+    const playerProfile = await PlayerProfile.findOne({ userID: id });
+    if (playerProfile && playerProfile.cvUrl) {
+      cvLink = playerProfile.cvUrl;
+    } else {
+      const staffProfile = await StaffProfile.findOne({ userID: id });
+      if (staffProfile && staffProfile.cvUrl) {
+        cvLink = staffProfile.cvUrl;
+      } else {
+        const teamProfile = await Team.findOne({ userID: id });
+        if (teamProfile && teamProfile.cvUrl) {
+           cvLink = teamProfile.cvUrl;
+        }
+      }
+    }
+
+    let messageContent = `Hi, I have applied to your job listing: "${job.title}".`;
+    if (cvLink) {
+      messageContent += ` You can view and download my CV here: ${cvLink}`;
+    }
+
+    const chat = new PersonalChat({
+      sender: id,
+      receiver: receiverId,
+      content: messageContent
+    });
+    await chat.save();
+
     res.status(200).json({ message: 'Application submitted successfully. The poster has been notified.' });
   } catch (err) {
     next(err);

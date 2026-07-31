@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { getMe, updateMe, getProfileById, searchProfiles } from '../controllers/profileController';
-import { authenticateJWT } from '../middleware/auth';
-import upload from '../middleware/upload';
+import { getMe, updateMe, getProfileById, searchProfiles } from '../Controllers/profileController.js';
+import { authenticateJWT } from '../middleware/auth.js';
+import upload from '../middleware/upload.js';
 
 const router = Router();
 
@@ -9,7 +9,7 @@ const router = Router();
 router.use(authenticateJWT);
 
 router.get('/me', getMe);
-router.put('/me', upload.single('profileImage'), updateMe);
+router.put('/me', upload.fields([{ name: 'profileImage', maxCount: 1 }, { name: 'cvFile', maxCount: 1 }]), updateMe);
 router.get('/search', searchProfiles); // Path '/search' avoids conflicting with '/:id'
 router.get('/:id', getProfileById);
 

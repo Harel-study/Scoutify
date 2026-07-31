@@ -18,6 +18,20 @@ export const Messages: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const targetUserParam = searchParams.get('user');
 
+  const renderMessageContent = (text: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.split(urlRegex).map((part, i) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="underline font-semibold text-blue-400 hover:text-blue-300">
+            Link
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   const { conversations, activeMessages, activePartnerId, loading } = useSelector(
     (state: RootState) => state.chat
   );
@@ -174,7 +188,7 @@ export const Messages: React.FC = () => {
                           : 'bg-dark-100 dark:bg-dark-700 text-dark-800 dark:text-slate-100 rounded-tl-none'
                       }`}
                     >
-                      <p className="break-words">{msg.content}</p>
+                      <p className="break-words">{renderMessageContent(msg.content)}</p>
                       <span
                         className={`text-[8px] mt-1 block text-right ${
                           isSentByMe ? 'text-brand-100' : 'text-dark-400'

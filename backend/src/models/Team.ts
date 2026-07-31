@@ -28,6 +28,10 @@ export interface ITeam extends Document {
   createdAt: Date;
   /** @type {Date} When the team record was last updated. Automatically managed by Mongoose. */
   updatedAt: Date;
+  /** @type {string|undefined} A URL pointing to the team's uploaded CV file. */
+  cvUrl?: string;
+  /** @type {string|undefined} The original file name of the team's uploaded CV. */
+  cvName?: string;
 }
 
 /**
@@ -61,6 +65,14 @@ const teamSchema = new Schema<ITeam>({
         type: Boolean, 
         required: true, 
         default: false
+    },
+    cvUrl: {
+        type: String,
+        default: ''
+    },
+    cvName: {
+        type: String,
+        default: ''
     }
 }, {
     timestamps: true 

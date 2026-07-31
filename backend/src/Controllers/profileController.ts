@@ -5,17 +5,17 @@
  * Manages the distinct profile types (Player, Team, Staff) dynamically based on user roles.
  */
 import { Response, NextFunction } from 'express';
-import { AuthenticatedRequest } from '../middleware/auth';
-import PlayerProfile from '../models/PlayerProfile';
-import Team from '../models/Team';
-import StaffProfile from '../models/StaffProfile';
-import User from '../models/User';
-import { uploadToCloudinary } from '../config/cloudinary';
+import { AuthenticatedRequest } from '../middleware/auth.js';
+import PlayerProfile from '../models/PlayerProfile.js';
+import Team from '../models/Team.js';
+import StaffProfile from '../models/StaffProfile.js';
+import User from '../models/User.js';
+import { uploadToCloudinary } from '../config/cloudinary.js';
 import {
   playerProfileUpdateSchema,
   teamProfileUpdateSchema,
   staffProfileUpdateSchema
-} from '../validation/joiSchemas';
+} from '../validation/joiSchemas.js';
 
 /**
  * Retrieves the profile of the currently authenticated user.
@@ -74,10 +74,19 @@ export const updateMe = async (req: AuthenticatedRequest, res: Response, next: N
 
     let updateData = req.body;
     let profileImageUrl = '';
+    let cvFileUrl = '';
+    let cvFileName = '';
 
-    // Handle file upload if present
-    if (req.file) {
-      profileImageUrl = await uploadToCloudinary(req.file.buffer, 'avatars');
+    // Handle file uploads if present
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+    
+    if (files?.profileImage && files.profileImage.length > 0) {
+      profileImageUrl = await uploadToCloudinary(files.profileImage[0].buffer, 'avatars');
+    }
+    
+    if (files?.cvFile && files.cvFile.length > 0) {
+      cvFileUrl = await uploadToCloudinary(files.cvFile[0].buffer, 'cvs');
+      cvFileName = files.cvFile[0].originalname;
     }
 
     if (role === 'player') {
@@ -88,6 +97,15 @@ export const updateMe = async (req: AuthenticatedRequest, res: Response, next: N
       if (profileImageUrl) {
         value.profileImage = profileImageUrl;
       }
+      if (cvFileUrl) {
+        value.cvUrl = cvFileUrl;
+        value.cvName = cvFileName;
+      }
+      if (updateData.deleteCv === 'true' || updateData.deleteCv === true) {
+        value.cvUrl = '';
+        value.cvName = '';
+      }
+      delete value.deleteCv;
 
       const updated = await PlayerProfile.findOneAndUpdate(
         { userID: id },
@@ -104,6 +122,18 @@ export const updateMe = async (req: AuthenticatedRequest, res: Response, next: N
       if (error) return res.status(400).json({ message: error.details[0].message });
 
       // If a team profile picture is supported, we can add a logo field or map to generic logo
+      if (profileImageUrl) {
+         // Teams don't currently have profileImage in schema, but we can add it later or ignore
+      }
+      if (cvFileUrl) {
+        value.cvUrl = cvFileUrl;
+        value.cvName = cvFileName;
+      }
+      if (updateData.deleteCv === 'true' || updateData.deleteCv === true) {
+        value.cvUrl = '';
+        value.cvName = '';
+      }
+      delete value.deleteCv;
       const updated = await Team.findOneAndUpdate(
         { userID: id },
         { $set: value },
@@ -121,6 +151,15 @@ export const updateMe = async (req: AuthenticatedRequest, res: Response, next: N
       if (profileImageUrl) {
         value.profileImage = profileImageUrl;
       }
+      if (cvFileUrl) {
+        value.cvUrl = cvFileUrl;
+        value.cvName = cvFileName;
+      }
+      if (updateData.deleteCv === 'true' || updateData.deleteCv === true) {
+        value.cvUrl = '';
+        value.cvName = '';
+      }
+      delete value.deleteCv;
 
       const updated = await StaffProfile.findOneAndUpdate(
         { userID: id },

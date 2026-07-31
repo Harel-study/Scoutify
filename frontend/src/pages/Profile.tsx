@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import api from '../utils/axios';
 import { useAuth } from '../context/AuthContext';
 import { ProfileSkeleton } from '../components/SkeletonLoader';
-import { MapPin, Briefcase, Footprints, Shield, User, Camera, Save } from 'lucide-react';
+import { MapPin, Briefcase, Footprints, Shield, User, Camera, Save, Trash2, FileText } from 'lucide-react';
 
 export const Profile: React.FC = () => {
   const { user } = useAuth();
@@ -43,6 +43,10 @@ export const Profile: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [selectedCvFile, setSelectedCvFile] = useState<File | null>(null);
+  const [deleteCv, setDeleteCv] = useState(false);
+  const cvFileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchMyProfile = useCallback(async () => {
     setLoading(true);
@@ -113,6 +117,12 @@ export const Profile: React.FC = () => {
       if (selectedFile) {
         formData.append('profileImage', selectedFile);
       }
+      if (selectedCvFile) {
+        formData.append('cvFile', selectedCvFile);
+      }
+      if (deleteCv) {
+        formData.append('deleteCv', 'true');
+      }
 
       if (user?.role === 'player') {
         Object.entries(playerFields).forEach(([key, val]) => {
@@ -137,6 +147,8 @@ export const Profile: React.FC = () => {
       setProfile(response.data.profile);
       setSuccess('Profile updated successfully!');
       setSelectedFile(null);
+      setSelectedCvFile(null);
+      setDeleteCv(false);
       
       // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
@@ -512,6 +524,60 @@ export const Profile: React.FC = () => {
                 </div>
               </>
             )}
+
+            {/* CV Upload Section */}
+            <div className="pt-4 border-t border-dark-150 dark:border-dark-700 mt-6">
+              <label className="text-xs font-bold text-dark-300 block mb-2">Curriculum Vitae (CV)</label>
+              
+              {profile?.cvName && !deleteCv ? (
+                <div className="flex items-center justify-between p-3 bg-dark-50 dark:bg-dark-900 border border-dark-200 dark:border-dark-800 rounded-xl mb-3">
+                  <div className="flex items-center space-x-3 overflow-hidden">
+                    <FileText className="w-5 h-5 text-brand-500 shrink-0" />
+                    <a href={profile.cvUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-dark-900 dark:text-white truncate hover:underline">
+                      {profile.cvName}
+                    </a>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDeleteCv(true)}
+                    className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-lg transition"
+                    title="Remove CV"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : null}
+
+              {(deleteCv || !profile?.cvName) && (
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="file"
+                    ref={cvFileInputRef}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) setSelectedCvFile(file);
+                    }}
+                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => cvFileInputRef.current?.click()}
+                    className="text-xs font-semibold px-4 py-2 bg-dark-100 dark:bg-dark-700 hover:bg-dark-200 dark:hover:bg-dark-600 text-dark-800 dark:text-white rounded-xl transition-colors"
+                  >
+                    Select CV File
+                  </button>
+                  {selectedCvFile && (
+                    <span className="text-xs text-dark-500 dark:text-dark-400 truncate max-w-[200px]">
+                      {selectedCvFile.name}
+                    </span>
+                  )}
+                  {deleteCv && profile?.cvName && !selectedCvFile && (
+                    <span className="text-xs text-red-500">CV marked for deletion upon save</span>
+                  )}
+                </div>
+              )}
+            </div>
 
             <div className="pt-4 flex justify-end">
               <button
