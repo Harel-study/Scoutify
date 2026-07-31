@@ -84,68 +84,88 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const register = async (username: string, password: string, role: 'player' | 'team' | 'staff') => {
+  async function register(username: string,
+    password: string,
+    role: 'player' | 'team' | 'staff'): Promise<void> {
     setLoading(true);
+
     try {
-      const response = await api.post('/auth/register', { username, password, role });
+      const response = await api.post('/auth/register', {
+        username,
+        password,
+        role,
+      });
+
       const { accessToken, user: loggedUser } = response.data;
+
       localStorage.setItem('accessToken', accessToken);
       setUser(loggedUser);
     } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Registration failed');
+      console.error('Registration error:', {
+        message: err.message,
+        status: err.response?.status,
+    data: err.response?.data,
+    baseURL: err.config?.baseURL,
+    url: err.config?.url,
+  });
+
+      throw new Error(
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        'Registration failed'
+      );
     } finally {
       setLoading(false);
     }
-  };
-
-  const googleLogin = async (idToken: string, role?: 'player' | 'team' | 'staff') => {
-    setLoading(true);
-    try {
-      const response = await api.post('/auth/google', { idToken, role });
-      
-      if (response.data.needsRoleSelection) {
-        return {
-          needsRoleSelection: true,
-          email: response.data.email,
-          googleId: response.data.googleId,
-        };
-      }
-
-      const { accessToken, user: loggedUser } = response.data;
-      localStorage.setItem('accessToken', accessToken);
-      setUser(loggedUser);
-      return {};
-    } catch (err: any) {
-      throw new Error(err.response?.data?.message || 'Google login failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = async () => {
-    try {
-      await api.post('/auth/logout');
-    } catch (err) {
-      console.error("Logout failed:", err);
-      // Proceed with local logout even if backend request fails
-    } finally {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('user');
-      setUser(null);
-    }
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, loading, login, register, googleLogin, logout, checkSession }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context;
+
+const googleLogin = async (
+  idToken: string,
+  role?: 'player' | 'team' | 'staff'
+): Promise<{
+  needsRoleSelection?: boolean;
+  email?: string;
+  googleId?: string;
+}> => {
+  setLoading(true);
+
+  try {
+    const response = await api.post('/auth/google', {
+      idToken,
+      role,
+    });
+
+    if (response.data.needsRoleSelection) {
+      return {
+        needsRoleSelection: true,
+        email: response.data.email,
+        googleId: response.data.googleId,
+      };
+    }
+
+    const { accessToken, user: loggedUser } = response.data;
+
+    localStorage.setItem('accessToken', accessToken);
+    setUser(loggedUser);
+
+    return {};
+  } catch (err: any) {
+    console.error('Google login error:', {
+      message: err.message,
+      status: err.response?.status,
+      data: err.response?.data,
+      baseURL: err.config?.baseURL,
+      url: err.config?.url,
+    });
+
+    throw new Error(
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      err.message ||
+      'Google login failed'
+    );
+  } finally {
+    setLoading(false);
+  }
 };
