@@ -4,6 +4,8 @@ import { Provider } from 'react-redux';
 import { store } from './store';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { LoadingProvider } from './context/LoadingContext';
+import LoadingScreen from './components/LoadingScreen';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
@@ -18,14 +20,9 @@ const Profile = lazy(() => import('./pages/Profile'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 
-// Loading spinner fallback for lazy components
+// Loading fallback for lazy components using new LoadingScreen
 const PageLoader: React.FC = () => (
-  <div className="flex-1 min-h-[calc(100vh-4rem)] flex items-center justify-center bg-white dark:bg-dark-900 text-slate-100 transition-colors duration-200">
-    <div className="flex flex-col items-center">
-      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-brand-500 mb-3"></div>
-      <p className="text-dark-500 dark:text-dark-400 text-xs animate-pulse font-medium">Loading content...</p>
-    </div>
-  </div>
+  <LoadingScreen message="טוען עמוד..." subtext="טוען נתונים למערכת Scoutify..." />
 );
 
 // Layout wrapper for authenticated pages
@@ -51,7 +48,8 @@ export const App: React.FC = () => {
       <Provider store={store}>
         <ThemeProvider>
           <AuthProvider>
-            <BrowserRouter>
+            <LoadingProvider>
+              <BrowserRouter>
               <Routes>
                 {/* Public Authentication Pages */}
                 <Route
@@ -127,11 +125,12 @@ export const App: React.FC = () => {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </BrowserRouter>
-          </AuthProvider>
-        </ThemeProvider>
-      </Provider>
-    </ErrorBoundary>
-  );
+          </LoadingProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </Provider>
+  </ErrorBoundary>
+);
 };
 
 export default App;
