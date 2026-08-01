@@ -74,7 +74,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
           {/* Synchronized Pitch Shadow */}
           <div className="pitch-ball-shadow" />
 
-          {/* Bouncing & Spinning Classic Black & White Soccer Ball */}
+          {/* Bouncing & Spinning Realistic 3D B&W Soccer Ball */}
           <div className="soccer-ball-bouncing-wrapper">
             <div className="soccer-ball-spinning-inner">
               <svg
@@ -84,49 +84,121 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <defs>
-                  {/* Subtle 3D Volume Gradient */}
-                  <radialGradient id="ball3dShade" cx="30%" cy="30%" r="70%">
-                    <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
-                    <stop offset="60%" stopColor="#CBD5E1" stopOpacity="0.05" />
-                    <stop offset="100%" stopColor="#0F172A" stopOpacity="0.55" />
+                  {/* Leather Bump Texture Filter */}
+                  <filter id="leatherNoise" x="0%" y="0%" width="100%" height="100%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
+                    <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.06 0" />
+                    <feBlend in="SourceGraphic" in2="noise" mode="multiply" />
+                  </filter>
+
+                  {/* Main 3D Sphere Radial Shading */}
+                  <radialGradient id="sphere3DGrad" cx="30%" cy="25%" r="70%" fx="25%" fy="20%">
+                    <stop offset="0%" stopColor="#FFFFFF" />
+                    <stop offset="55%" stopColor="#F1F5F9" />
+                    <stop offset="85%" stopColor="#CBD5E1" />
+                    <stop offset="100%" stopColor="#64748B" />
+                  </radialGradient>
+
+                  {/* Black Leather Panel 3D Cushion Gradient */}
+                  <radialGradient id="blackPanelGrad" cx="35%" cy="30%" r="65%">
+                    <stop offset="0%" stopColor="#334155" />
+                    <stop offset="65%" stopColor="#0F172A" />
+                    <stop offset="100%" stopColor="#020617" />
+                  </radialGradient>
+
+                  {/* Spherical Edge Occlusion Shadow */}
+                  <radialGradient id="edgeOcclusionGrad" cx="50%" cy="50%" r="50%">
+                    <stop offset="65%" stopColor="#000000" stopOpacity="0" />
+                    <stop offset="92%" stopColor="#0F172A" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="#020617" stopOpacity="0.6" />
                   </radialGradient>
                 </defs>
 
-                {/* Base White Ball Circle */}
-                <circle cx="50" cy="50" r="46" fill="#FFFFFF" stroke="#0F172A" strokeWidth="3" />
+                {/* Outer 3D Sphere Base */}
+                <circle cx="50" cy="50" r="46" fill="url(#sphere3DGrad)" stroke="#1E293B" strokeWidth="2.5" />
 
-                {/* Classic Clean Pentagons & Hexagons (No person artifacts) */}
-                <g fill="#0F172A" stroke="#0F172A" strokeWidth="2.5" strokeLinejoin="round">
-                  {/* Central Regular Pentagon */}
-                  <polygon points="50,32 63,41 58,57 42,57 37,41" />
+                {/* Leather Grain Texture */}
+                <circle cx="50" cy="50" r="46" fill="#000000" opacity="0.03" filter="url(#leatherNoise)" />
 
-                  {/* 5 Outer Pentagons around Edge */}
-                  <polygon points="50,4 58,14 50,22 42,14" />
-                  <polygon points="82,24 88,36 74,42 70,30" />
-                  <polygon points="74,74 62,82 56,68 68,62" />
-                  <polygon points="26,74 32,62 44,68 38,82" />
-                  <polygon points="18,24 30,30 26,42 12,36" />
+                {/* Curved Spherical Pentagonal Leather Panels */}
+                {/* Central Curved Pentagon */}
+                <path
+                  d="M 50,28 Q 59,33 63,42 Q 59,52 56,60 Q 44,60 41,52 Q 37,42 41,33 Q 45,30 50,28 Z"
+                  fill="url(#blackPanelGrad)"
+                  stroke="#0F172A"
+                  strokeWidth="2"
+                  strokeLinejoin="round"
+                />
 
-                  {/* Seam Lines connecting Pentagons */}
-                  <line x1="50" y1="22" x2="50" y2="32" strokeWidth="2.5" />
-                  <line x1="70" y1="30" x2="63" y2="41" strokeWidth="2.5" />
-                  <line x1="68" y1="62" x2="58" y2="57" strokeWidth="2.5" />
-                  <line x1="44" y1="68" x2="42" y2="57" strokeWidth="2.5" />
-                  <line x1="30" y1="30" x2="37" y2="41" strokeWidth="2.5" />
+                {/* Top Curved Pentagon */}
+                <path
+                  d="M 50,4 Q 56,11 58,16 Q 52,23 50,28 Q 44,23 42,16 Q 44,11 50,4 Z"
+                  fill="url(#blackPanelGrad)"
+                  stroke="#0F172A"
+                  strokeWidth="2"
+                />
 
-                  {/* Edge Boundary Seam Lines */}
-                  <line x1="58" y1="14" x2="70" y2="30" strokeWidth="2.5" />
-                  <line x1="42" y1="14" x2="30" y2="30" strokeWidth="2.5" />
-                  <line x1="74" y1="42" x2="68" y2="62" strokeWidth="2.5" />
-                  <line x1="56" y1="68" x2="44" y2="68" strokeWidth="2.5" />
-                  <line x1="32" y1="62" x2="26" y2="42" strokeWidth="2.5" />
+                {/* Top-Right Curved Pentagon */}
+                <path
+                  d="M 82,22 Q 86,30 88,38 Q 78,41 74,45 Q 67,37 63,42 Q 68,31 72,28 Q 77,24 82,22 Z"
+                  fill="url(#blackPanelGrad)"
+                  stroke="#0F172A"
+                  strokeWidth="2"
+                />
+
+                {/* Bottom-Right Curved Pentagon */}
+                <path
+                  d="M 76,76 Q 66,83 62,85 Q 58,74 56,60 Q 67,54 74,53 Q 78,64 76,76 Z"
+                  fill="url(#blackPanelGrad)"
+                  stroke="#0F172A"
+                  strokeWidth="2"
+                />
+
+                {/* Bottom-Left Curved Pentagon */}
+                <path
+                  d="M 24,76 Q 22,64 26,53 Q 33,54 41,60 Q 40,74 38,85 Q 34,83 24,76 Z"
+                  fill="url(#blackPanelGrad)"
+                  stroke="#0F172A"
+                  strokeWidth="2"
+                />
+
+                {/* Top-Left Curved Pentagon */}
+                <path
+                  d="M 18,22 Q 23,24 28,28 Q 33,31 37,42 Q 33,37 26,45 Q 22,41 12,38 Q 14,30 18,22 Z"
+                  fill="url(#blackPanelGrad)"
+                  stroke="#0F172A"
+                  strokeWidth="2"
+                />
+
+                {/* Curved Spherical Seam Lines (Hexagon Borders) */}
+                <g stroke="#1E293B" strokeWidth="2.2" strokeLinecap="round" fill="none">
+                  <path d="M 58,16 Q 66,21 72,28" />
+                  <path d="M 42,16 Q 34,21 28,28" />
+                  <path d="M 74,45 Q 80,48 86,54" />
+                  <path d="M 74,53 Q 68,47 63,42" />
+                  <path d="M 26,45 Q 20,48 14,54" />
+                  <path d="M 26,53 Q 32,47 37,42" />
+                  <path d="M 56,60 Q 48,68 41,60" />
+                  <path d="M 62,85 Q 50,94 38,85" />
+                  <path d="M 88,38 Q 94,48 90,60" />
+                  <path d="M 12,38 Q 6,48 10,60" />
                 </g>
 
-                {/* 3D Depth Shadow Overlay */}
-                <circle cx="50" cy="50" r="46" fill="url(#ball3dShade)" pointerEvents="none" />
+                {/* Spherical Occlusion Shadow */}
+                <circle cx="50" cy="50" r="46" fill="url(#edgeOcclusionGrad)" pointerEvents="none" />
 
-                {/* Light Reflection Highlight */}
-                <ellipse cx="34" cy="25" rx="9" ry="5" fill="#FFFFFF" opacity="0.75" transform="rotate(-30 34 25)" />
+                {/* Rim Highlight Specular Arc */}
+                <path
+                  d="M 10,40 A 44 44 0 0 1 50,6"
+                  stroke="#FFFFFF"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  opacity="0.65"
+                  fill="none"
+                />
+
+                {/* Primary Gloss Specular Highlight */}
+                <ellipse cx="32" cy="24" rx="10" ry="5.5" fill="#FFFFFF" opacity="0.75" transform="rotate(-30 32 24)" />
               </svg>
             </div>
           </div>

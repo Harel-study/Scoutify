@@ -19,6 +19,7 @@ const Messages = lazy(() => import('./pages/Messages'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Loading fallback for lazy components using new LoadingScreen
 const PageLoader: React.FC = () => (
@@ -121,8 +122,15 @@ export const App: React.FC = () => {
                   }
                 />
 
-                {/* Catch-all Redirect */}
-                <Route path="*" element={<Navigate to="/" replace />} />
+                {/* Catch-all 404 Not Found Route */}
+                <Route
+                  path="*"
+                  element={
+                    <Suspense fallback={<PageLoader />}>
+                      <NotFound />
+                    </Suspense>
+                  }
+                />
               </Routes>
             </BrowserRouter>
           </LoadingProvider>
