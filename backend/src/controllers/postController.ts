@@ -103,6 +103,7 @@ export const listPosts = async (req: AuthenticatedRequest, res: Response, next: 
 
     const posts = await Post.find()
       .populate({ path: 'profileId', populate: { path: 'userID', select: 'username email role', strictPopulate: false } })
+      .populate({ path: 'comments.user', select: 'username email role profileImage', strictPopulate: false })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit);

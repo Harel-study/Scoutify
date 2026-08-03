@@ -162,7 +162,7 @@ const feedSlice = createSlice({
       const { postId, post } = action.payload;
       const index = state.posts.findIndex((p) => p._id === postId);
       if (index !== -1) {
-        state.posts[index] = post; // Replace with updated post that includes the new comment
+        state.posts[index].comments = post.comments; // Only update the comments array
       }
     });
   },
