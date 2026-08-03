@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { AuthProvider } from './context/AuthContext';
@@ -10,6 +10,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
+
 
 // Lazy load pages for code splitting & performance
 const Feed = lazy(() => import('./pages/Feed'));
@@ -121,7 +122,26 @@ export const App: React.FC = () => {
                     </ProtectedRoute>
                   }
                 />
-
+                <Route
+                  path="/profile/me"
+                  element={
+                    <ProtectedRoute>
+                      <AuthenticatedLayout>
+                        <Profile />
+                      </AuthenticatedLayout>
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile/:id"
+                  element={
+                    <ProtectedRoute>
+                      <AuthenticatedLayout>
+                        <Profile />
+                      </AuthenticatedLayout>
+                    </ProtectedRoute>
+                  }
+                />
                 {/* Catch-all 404 Not Found Route */}
                 <Route
                   path="*"

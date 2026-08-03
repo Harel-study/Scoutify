@@ -3,10 +3,12 @@ import api from '../utils/axios';
 import { useAuth } from '../context/AuthContext';
 import { ProfileSkeleton } from '../components/SkeletonLoader';
 import { MapPin, Briefcase, Footprints, Shield, User, Camera, Save, Trash2, FileText } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 export const Profile: React.FC = () => {
   const { user } = useAuth();
-  const [profile, setProfile] = useState<any>(null);
+  const navigate = useNavigate();
+  const { userId } = useParams<{ userId?: string }>();
+  const isOwnProfile = !userId || userId === user?.id;  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -43,7 +45,6 @@ export const Profile: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-
   const [selectedCvFile, setSelectedCvFile] = useState<File | null>(null);
   const [deleteCv, setDeleteCv] = useState(false);
   const cvFileInputRef = useRef<HTMLInputElement>(null);
