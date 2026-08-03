@@ -1,5 +1,12 @@
 import mongoose from 'mongoose';
+import dns from 'dns';
 import logger from './logger.js';
+
+// Set custom DNS servers if specified in environment variables (useful for local ISP DNS issues)
+if (process.env.DNS_SERVERS) {
+  const servers = process.env.DNS_SERVERS.split(',').map((s) => s.trim());
+  dns.setServers(servers);
+}
 
 export const connectDB = async (): Promise<void> => {
   try {
