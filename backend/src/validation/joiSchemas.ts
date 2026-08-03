@@ -137,3 +137,11 @@ export const chatSchema = Joi.object({
   receiverId: Joi.string().required(),
   content: Joi.string().required().trim()
 });
+
+/**
+ * Defines the validation schema for adding a comment to a post.
+ */
+export const commentSchema = Joi.object({
+  text: Joi.string().required().trim().max(1000)
+});
+

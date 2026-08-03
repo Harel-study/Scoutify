@@ -10,7 +10,7 @@ import Post, { IMedia } from '../models/Post.js';
 import Team from '../models/Team.js';
 import Notification from '../models/Notification.js';
 import { uploadToCloudinary } from '../config/cloudinary.js';
-import { postSchema } from '../validation/joiSchemas.js';
+import { postSchema, commentSchema } from '../validation/joiSchemas.js';
 
 /**
  * Creates a new social feed post.
@@ -219,6 +219,66 @@ export const toggleLikePost = async (req: AuthenticatedRequest, res: Response, n
     }
 
     res.status(200).json({ message: liked ? 'Post liked' : 'Post unliked', likesCount: post.likes.length, liked, likes: post.likes });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Adds a comment to a specified post.
+ *
+ * @param {AuthenticatedRequest} req - The Express request object containing the post ID and comment text.
+ * @param {Response} res - The Express response object.
+ * @param {NextFunction} next - The next middleware function.
+ */
+export const addComment = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
+    const { id } = req.user;
+
+    const { error, value } = commentSchema.validate(req.body);
+    if (error) return res.status(400).json({ message: error.details[0].message });
+
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(404).json({ message: 'Post not found' });
+
+    const newComment = {
+      user: id as any,
+      text: value.text,
+      createdAt: new Date()
+    };
+
+    post.comments.push(newComment);
+    await post.save();
+
+    // Populate user details for the new comment
+    await post.populate({
+      path: 'comments.user',
+      select: 'username email role profileImage',
+      strictPopulate: false
+    });
+
+    // Notify the post owner
+    let receiverId: string | null = null;
+    if (post.profileModel === 'User') {
+      receiverId = post.profileId.toString();
+    } else if (post.profileModel === 'Team') {
+      const team = await Team.findById(post.profileId);
+      if (team) receiverId = team.userID.toString();
+    }
+
+    if (receiverId && receiverId !== id) {
+      const notification = new Notification({
+        sender: id,
+        receiver: receiverId,
+        type: 'post_comment', // You might need to add this to the Notification model enum if it exists
+        content: 'Someone commented on your post',
+        sourceLink: `/feed`
+      });
+      await notification.save();
+    }
+
+    res.status(201).json({ message: 'Comment added successfully', post });
   } catch (err) {
     next(err);
   }

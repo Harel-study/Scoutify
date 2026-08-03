@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createPost, listPosts, deletePost, toggleLikePost } from '../controllers/postController.js';
+import { createPost, listPosts, deletePost, toggleLikePost, addComment } from '../controllers/postController.js';
 import { authenticateJWT } from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
 
@@ -12,5 +12,6 @@ router.get('/', listPosts);
 router.post('/', upload.single('media'), createPost);
 router.delete('/:id', deletePost);
 router.post('/:id/like', toggleLikePost);
+router.post('/:id/comment', addComment);
 
 export default router;

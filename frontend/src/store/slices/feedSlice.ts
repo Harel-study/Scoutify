@@ -6,6 +6,19 @@ export interface IMedia {
   type: 'image' | 'video' | 'document';
 }
 
+export interface IComment {
+  _id: string;
+  user: {
+    _id: string;
+    username: string;
+    email?: string;
+    role: string;
+    profileImage?: string;
+  };
+  text: string;
+  createdAt: string;
+}
+
 export interface IPost {
   _id: string;
   profileId: {
@@ -28,6 +41,7 @@ export interface IPost {
   targetRole?: string;
   location?: string;
   likes: string[];
+  comments: IComment[];
   createdAt: string;
   updatedAt: string;
 }
@@ -93,6 +107,18 @@ export const deletePost = createAsyncThunk(
   }
 );
 
+export const addComment = createAsyncThunk(
+  'feed/addComment',
+  async ({ postId, text }: { postId: string; text: string }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/posts/${postId}/comment`, { text });
+      return { postId, post: response.data.post as IPost };
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || 'Failed to add comment');
+    }
+  }
+);
+
 const feedSlice = createSlice({
   name: 'feed',
   initialState,
@@ -129,6 +155,15 @@ const feedSlice = createSlice({
     // Delete Post
     builder.addCase(deletePost.fulfilled, (state, action: PayloadAction<string>) => {
       state.posts = state.posts.filter((p) => p._id !== action.payload);
+    });
+
+    // Add Comment
+    builder.addCase(addComment.fulfilled, (state, action) => {
+      const { postId, post } = action.payload;
+      const index = state.posts.findIndex((p) => p._id === postId);
+      if (index !== -1) {
+        state.posts[index] = post; // Replace with updated post that includes the new comment
+      }
     });
   },
 });

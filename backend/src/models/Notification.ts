@@ -24,7 +24,8 @@ export interface INotification {
     | 'connection_request'
     | 'job_application'
     | 'profile_view'
-    | 'post_like';
+    | 'post_like'
+    | 'post_comment';
 
   /** The main text content of the notification. */
   content: string;
@@ -65,6 +66,7 @@ const notificationSchema = new Schema<INotification>(
         'job_application',
         'profile_view',
         'post_like',
+        'post_comment',
       ],
     },
 

@@ -20,6 +20,20 @@ export interface IMedia {
 }
 
 /**
+ * Represents a comment on a post.
+ *
+ * @interface
+ */
+export interface IComment {
+  /** @type {Types.ObjectId} Reference to the User who made the comment. */
+  user: Types.ObjectId;
+  /** @type {string} The text content of the comment. */
+  text: string;
+  /** @type {Date} The date when the comment was created. */
+  createdAt: Date;
+}
+
+/**
  * Represents a post document in the database.
  *
  * @interface
@@ -39,6 +53,8 @@ export interface IPost extends Document {
   location?: string;
   /** @type {Types.ObjectId[]} Array of User IDs who have liked this post. */
   likes: Types.ObjectId[];
+  /** @type {IComment[]} Array of comments on the post. */
+  comments: IComment[];
   /** @type {Date} The date when the post record was created. Automatically managed by Mongoose. */
   createdAt: Date;
   /** @type {Date} The date when the post record was last updated. Automatically managed by Mongoose. */
@@ -62,7 +78,14 @@ const postSchema = new Schema<IPost>({
     },
     targetRole: { type: String, required: false, trim: true },
     location: { type: String, required: false, trim: true },
-    likes: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }]
+    likes: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
+    comments: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        text: { type: String, required: true, trim: true },
+        createdAt: { type: Date, default: Date.now }
+      }
+    ]
 }, {
     timestamps: true
 });
