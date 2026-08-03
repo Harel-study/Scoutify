@@ -3,7 +3,7 @@ import api from '../utils/axios';
 import { useAuth } from '../context/AuthContext';
 import { ProfileSkeleton } from '../components/SkeletonLoader';
 import { MapPin, Briefcase, Footprints, Shield, User, Camera, Save, Trash2, FileText } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 export const Profile: React.FC = () => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
