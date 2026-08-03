@@ -11,6 +11,6 @@ router.use(authenticateJWT);
 router.get('/me', getMe);
 router.put('/me', upload.fields([{ name: 'profileImage', maxCount: 1 }, { name: 'cvFile', maxCount: 1 }]), updateMe);
 router.get('/search', searchProfiles); // Path '/search' avoids conflicting with '/:id'
-router.get('/:id', getProfileById);
+router.get('/:userId', getProfileById);
 
 export default router;
