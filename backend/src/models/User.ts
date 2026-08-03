@@ -7,6 +7,8 @@ export interface IUser {
   password?: string;
   role: 'player' | 'team' | 'staff';
   googleId?: string;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
 
@@ -50,6 +52,16 @@ const userSchema = new Schema<IUser>(
     googleId: {
       type: String,
       sparse: true,
+    },
+
+    passwordResetToken: {
+      type: String,
+      default: undefined,
+    },
+
+    passwordResetExpires: {
+      type: Date,
+      default: undefined,
     },
   },
   {

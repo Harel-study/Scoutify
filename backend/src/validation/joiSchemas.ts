@@ -55,6 +55,20 @@ export const googleLoginSchema = Joi.object({
 });
 
 /**
+ * Defines the validation schema for requesting a password reset email.
+ */
+export const forgotPasswordSchema = Joi.object({
+  email: Joi.string().email().required().lowercase().trim()
+});
+
+/**
+ * Defines the validation schema for completing password reset.
+ */
+export const resetPasswordSchema = Joi.object({
+  password: Joi.string().min(6).required()
+});
+
+/**
  * Defines the validation schema for updating a player's profile.
  *
  * Restricts position to specific soccer roles, enforces physical attributes

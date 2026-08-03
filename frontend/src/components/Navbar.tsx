@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { Sun, Moon, Bell, MessageSquare, LogOut, Check, Menu, X } from 'lucide-react';
+import { Sun, Moon, Bell, LogOut, Check, Menu, X } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../utils/axios';
 
