@@ -2,18 +2,38 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import api from '../utils/axios';
 import { useAuth } from '../context/AuthContext';
 import { ProfileSkeleton } from '../components/SkeletonLoader';
-import { MapPin, Briefcase, Footprints, Shield, User, Camera, Save, Trash2, FileText } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import {
+  MapPin,
+  Briefcase,
+  Footprints,
+  Shield,
+  User,
+  Camera,
+  Save,
+  Trash2,
+  FileText,
+} from 'lucide-react';
+import { useParams } from 'react-router-dom';
+
 export const Profile: React.FC = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const { userId } = useParams<{ userId?: string }>();
-  const isOwnProfile = !userId || userId === user?.id;  const [profile, setProfile] = useState<any>(null);
+  const isOwnProfile = !userId || userId === user?.id;
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState('');
 
+  const profileRole =
+    profile?.userID?.role ||
+    profile?.type ||
+    user?.role;
+  const displayedUsername =
+    profile?.userID?.username ||
+    profile?.userID?.email ||
+    profile?.name ||
+    'Unknown';
   // Form Fields
   const [playerFields, setPlayerFields] = useState({
     position: 'Central Midfielder',
@@ -33,7 +53,6 @@ export const Profile: React.FC = () => {
     biography: '',
     recruiting: false,
   });
-
   const [staffFields, setStaffFields] = useState({
     roleDescription: '',
     experienceYears: '',
@@ -41,23 +60,33 @@ export const Profile: React.FC = () => {
     isLookingForJob: true,
     bio: '',
   });
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [selectedCvFile, setSelectedCvFile] = useState<File | null>(null);
   const [deleteCv, setDeleteCv] = useState(false);
   const cvFileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchMyProfile = useCallback(async () => {
+  const fetchProfile = useCallback(async (): Promise<void> => {
     setLoading(true);
+    setError('');
+
     try {
-      const response = await api.get('/profiles/me');
+      const endpoint = isOwnProfile
+        ? '/profiles/me'
+        : `/profiles/${userId}`;
+
+      const response = await api.get(endpoint);
       const data = response.data.profile;
+      const loadedRole =
+        response.data.role ||
+        data?.userID?.role ||
+        user?.role;
+
       setProfile(data);
 
-      // Initialize form fields
-      if (user?.role === 'player') {
+      if (loadedRole === 'player') {
         setPlayerFields({
           position: data.position || 'Central Midfielder',
           heightCm: data.heightCm || '',
@@ -65,11 +94,15 @@ export const Profile: React.FC = () => {
           preferredFoot: data.preferredFoot || 'Both',
           currentTeam: data.currentTeam || '',
           contractStatus: data.contractStatus || 'Free-Agent',
-          isLookingForJob: data.isLookingForJob !== undefined ? data.isLookingForJob : true,
+          isLookingForJob:
+            data.isLookingForJob !== undefined
+              ? data.isLookingForJob
+              : true,
           bio: data.bio || '',
         });
+
         setImagePreview(data.profileImage || '');
-      } else if (user?.role === 'team') {
+      } else if (loadedRole === 'team') {
         setTeamFields({
           name: data.name || '',
           city: data.city || '',
@@ -77,27 +110,38 @@ export const Profile: React.FC = () => {
           biography: data.biography || '',
           recruiting: data.recruiting || false,
         });
-      } else if (user?.role === 'staff') {
+
+        setImagePreview(data.profileImage || data.logo || '');
+      } else if (loadedRole === 'staff') {
         setStaffFields({
           roleDescription: data.roleDescription || '',
           experienceYears: data.experienceYears || '',
           currentTeam: data.currentTeam || '',
-          isLookingForJob: data.isLookingForJob !== undefined ? data.isLookingForJob : true,
+          isLookingForJob:
+            data.isLookingForJob !== undefined
+              ? data.isLookingForJob
+              : true,
           bio: data.bio || '',
         });
+
         setImagePreview(data.profileImage || '');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to load profile');
+      setProfile(null);
+      setError(
+        err.response?.data?.message ||
+        'Failed to load profile'
+      );
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [isOwnProfile, userId, user?.role]);
 
   useEffect(() => {
-    if (user) fetchMyProfile();
-  }, [user, fetchMyProfile]);
-
+    if (user) {
+      void fetchProfile();
+    }
+  }, [user, fetchProfile]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -166,7 +210,7 @@ export const Profile: React.FC = () => {
   return (
     <div className="flex-1 max-w-4xl mx-auto px-4 py-6 md:py-8 space-y-6">
       <h1 className="text-2xl font-extrabold text-dark-900 dark:text-white tracking-tight">
-        Manage Profile
+        {isOwnProfile ? 'Manage Profile' : 'User Profile'}
       </h1>
 
       {/* Messages */}
@@ -181,7 +225,7 @@ export const Profile: React.FC = () => {
           
           <div className="px-5 pb-6 text-center relative flex flex-col items-center">
             {/* Avatar upload container */}
-            {user?.role !== 'team' && (
+            {profileRole !== 'team' && (
               <div className="relative -mt-12 mb-4 group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                 {imagePreview ? (
                   <img src={imagePreview} alt="Avatar" className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-dark-800 shadow-md" />
@@ -196,23 +240,21 @@ export const Profile: React.FC = () => {
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
               </div>
             )}
-
-            {user?.role === 'team' && (
+            {profileRole === 'team' && (
               <div className="w-20 h-20 rounded-2xl bg-brand-100 dark:bg-brand-900/30 text-brand-500 flex items-center justify-center font-extrabold text-2xl uppercase shadow-sm -mt-10 mb-4 border-2 border-white dark:border-dark-800">
-                {teamFields.name[0] || (user?.username || user?.email || '')[0].toUpperCase()}
+                {teamFields.name[0] || displayedUsername.charAt(0).toUpperCase()}
               </div>
             )}
-
             <h2 className="text-base font-bold text-dark-900 dark:text-white">
-              {user?.role === 'team' ? teamFields.name || 'My Club' : (user?.username || user?.email)}
+              {profileRole === 'team' ? teamFields.name || 'My Club' : displayedUsername}
             </h2>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[9px] font-bold bg-brand-50 dark:bg-brand-950/20 text-brand-500 uppercase mt-1">
-              {user?.role} account
+              {profileRole} account
             </span>
 
             {/* Profile fields overview */}
             <div className="w-full text-left space-y-3.5 mt-6 text-xs text-dark-600 dark:text-dark-300 pt-4 border-t border-dark-150 dark:border-dark-700">
-              {user?.role === 'player' && (
+              {profileRole === 'player' && (
                 <>
                   <div className="flex items-center space-x-2.5">
                     <User className="w-4 h-4 text-dark-500" />
@@ -229,7 +271,7 @@ export const Profile: React.FC = () => {
                 </>
               )}
 
-              {user?.role === 'team' && (
+              {profileRole === 'team' && (
                 <>
                   <div className="flex items-center space-x-2.5">
                     <MapPin className="w-4 h-4 text-dark-500" />
@@ -244,7 +286,7 @@ export const Profile: React.FC = () => {
                 </>
               )}
 
-              {user?.role === 'staff' && (
+              {profileRole === 'staff' && (
                 <>
                   <div className="flex items-center space-x-2.5">
                     <User className="w-4 h-4 text-dark-500" />
@@ -259,16 +301,15 @@ export const Profile: React.FC = () => {
             </div>
           </div>
         </div>
-
-        {/* Right Panel: Edit Form */}
-        <div className="md:col-span-2 bg-white dark:bg-dark-800 border border-dark-200 dark:border-dark-700 rounded-3xl p-6 shadow-sm">
-          <h3 className="text-base font-bold text-dark-900 dark:text-white mb-6">Profile Settings</h3>
-
+        {isOwnProfile && (
+          <div className="md:col-span-2 bg-white dark:bg-dark-800 border border-dark-200 dark:border-dark-700 rounded-3xl p-6 shadow-sm">
+            <h3 className="text-base font-bold text-dark-900 dark:text-white mb-6">Profile Settings</h3>
           <form onSubmit={handleFormSubmit} className="space-y-4 text-left">
+
             {/* Render forms tailored to role */}
             
             {/* Player Fields */}
-            {user?.role === 'player' && (
+            {profileRole === 'player' && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -389,7 +430,7 @@ export const Profile: React.FC = () => {
             )}
 
             {/* Team Fields */}
-            {user?.role === 'team' && (
+            {profileRole === 'team' && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -458,7 +499,7 @@ export const Profile: React.FC = () => {
             )}
 
             {/* Staff Fields */}
-            {user?.role === 'staff' && (
+            {profileRole === 'staff' && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -592,6 +633,7 @@ export const Profile: React.FC = () => {
             </div>
           </form>
         </div>
+      )}
       </div>
     </div>
   );

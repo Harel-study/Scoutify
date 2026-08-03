@@ -122,18 +122,9 @@ export const App: React.FC = () => {
                     </ProtectedRoute>
                   }
                 />
+                // Dynamic Profile Route for viewing other users' profiles
                 <Route
-                  path="/profile/me"
-                  element={
-                    <ProtectedRoute>
-                      <AuthenticatedLayout>
-                        <Profile />
-                      </AuthenticatedLayout>
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/profile/:id"
+                  path="/profile/:userId"
                   element={
                     <ProtectedRoute>
                       <AuthenticatedLayout>

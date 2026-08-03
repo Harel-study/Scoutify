@@ -4,7 +4,7 @@ import type { AppDispatch } from '../store';
 import { toggleLike, deletePost, addComment, type IPost } from '../store/slices/feedSlice';
 import { useAuth } from '../context/AuthContext';
 import { Heart, Trash2, MapPin, Tag, MessageCircle, Send } from 'lucide-react';
-
+import { useNavigate } from 'react-router-dom';
 interface FeedCardProps {
   post: IPost;
 }
@@ -12,6 +12,7 @@ interface FeedCardProps {
 export const FeedCard: React.FC<FeedCardProps> = ({ post }) => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [showComments, setShowComments] = React.useState(false);
   const [commentText, setCommentText] = React.useState('');
 
@@ -24,13 +25,13 @@ export const FeedCard: React.FC<FeedCardProps> = ({ post }) => {
   if (post.profileModel === 'Team') {
     const teamProfile = post.profileId as any;
     authorName = teamProfile.name || 'Unknown Club';
-    avatarInitial = authorName[0];
+    avatarInitial = authorName.charAt(0).toUpperCase();
     authorUserId = teamProfile.userID?._id || teamProfile.userID || '';
   } else if (post.profileModel === 'User') {
     const userObj = post.profileId as any;
-    authorName = userObj.username || userObj.email || 'Unknown User';
-    avatarInitial = authorName[0].toUpperCase();
-    authorUserId = userObj._id || '';
+    authorName = userObj.username || userObj.email || userObj.userID?.username || userObj.userID?.email || 'Unknown User';
+    avatarInitial = authorName.charAt(0).toUpperCase();
+    authorUserId = userObj._id || userObj.userID?._id || userObj.userID || '';
   }
 
   const isOwner = user && user.id === authorUserId;
@@ -45,6 +46,17 @@ export const FeedCard: React.FC<FeedCardProps> = ({ post }) => {
       dispatch(deletePost(post._id));
     }
   };
+  const handleOpenProfile = () => {
+    console.log('logged-in user ID:', user?.id);
+    console.log('authorUserId:', authorUserId);
+    console.log('Profile model:', post.profileModel);
+    console.log('Profile object:', post.profileId);
+    if (!authorUserId) {
+      console.error('Author user ID is missing', post.profileId);
+      return;
+    }
+    navigate(`/profile/${authorUserId}`);
+  }
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,15 +70,27 @@ export const FeedCard: React.FC<FeedCardProps> = ({ post }) => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          {avatarUrl ? (
-            <img src={avatarUrl} alt={authorName} className="w-11 h-11 rounded-full object-cover" />
-          ) : (
-            <div className="w-11 h-11 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 font-extrabold flex items-center justify-center">
-              {avatarInitial}
-            </div>
-          )}
+          <div
+            onClick={handleOpenProfile}
+            className="cursor-pointer"
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={authorName}
+                className="w-11 h-11 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-11 h-11 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 font-extrabold flex items-center justify-center">
+                {avatarInitial}
+              </div>
+            )}
+          </div>
           <div>
-            <h3 className="text-sm font-bold text-dark-900 dark:text-white leading-tight">
+            <h3
+              onClick={handleOpenProfile}
+              className="text-sm font-bold text-dark-900 dark:text-white cursor-pointer hover:underline"
+            >
               {authorName}
             </h3>
             <div className="flex items-center space-x-2 mt-1">
@@ -197,7 +221,7 @@ export const FeedCard: React.FC<FeedCardProps> = ({ post }) => {
                     <img src={comment.user.profileImage} alt={comment.user.username} className="w-8 h-8 rounded-full object-cover shrink-0" />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-dark-100 dark:bg-dark-800 text-dark-500 dark:text-dark-400 text-xs font-bold flex items-center justify-center shrink-0">
-                      {comment.user.username[0].toUpperCase()}
+                      {comment.user.username.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div className="bg-dark-50 dark:bg-dark-900/50 p-2.5 rounded-2xl rounded-tl-none flex-1">

@@ -25,7 +25,7 @@ import {
  *
  * @param {AuthenticatedRequest} req - The Express request object containing the authenticated user.
  * @param {Response} res - The Express response object.
- * @param {NextFunction} next - The next middleware function.
+ * @param {NextFunction} nFext - The next middleware function.
  * @returns {Promise<void>} Resolves when the profile is returned or passes errors to next().
  */
 export const getMe = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -190,8 +190,7 @@ export const updateMe = async (req: AuthenticatedRequest, res: Response, next: N
  */
 export const getProfileById = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const targetUserId = req.params.id;
-
+    const targetUserId = req.params.userId;
     // Find target user first to know their role
     const user = await User.findById(targetUserId);
     if (!user) {
