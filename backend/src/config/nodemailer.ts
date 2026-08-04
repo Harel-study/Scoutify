@@ -1,3 +1,11 @@
+/**
+ * @module nodemailer
+ *
+ * Email transportation configuration service for Scoutify.
+ * Configures Nodemailer to send transactional emails via SMTP in production,
+ * falling back to stream logging in development environments.
+ */
+
 import nodemailer from 'nodemailer';
 import logger from './logger.js';
 
@@ -8,11 +16,15 @@ const smtpHost = process.env.SMTP_HOST || 'smtp.gmail.com';
 const smtpPort = Number(process.env.SMTP_PORT) || 587;
 
 /**
- * Creates Nodemailer Transporter instance.
- * Uses configured SMTP options from process.env.
+ * Creates and configures a Nodemailer Transporter instance based on environment variables.
+ *
+ * If SMTP credentials are absent or contain placeholder strings in development, initializes
+ * a stream transport that logs email payloads instead of sending real network requests.
+ *
+ * @returns {nodemailer.Transporter} Configured Nodemailer transporter instance.
  */
 export const createTransporter = () => {
-  // If no real credentials are set in development, create a JSON transport or log warning
+  // Use mock stream transporter in development when credentials are unconfigured or placeholder
   if (!smtpUser || smtpUser.includes('your_email')) {
     logger.info('Nodemailer using development stream transporter (no real SMTP configured). Email contents will be logged.');
     return nodemailer.createTransport({
@@ -22,6 +34,7 @@ export const createTransporter = () => {
     });
   }
 
+  // Create live SMTP transport connection
   return nodemailer.createTransport({
     host: smtpHost,
     port: smtpPort,
@@ -33,4 +46,5 @@ export const createTransporter = () => {
   });
 };
 
+/** Pre-initialized singleton Nodemailer transporter for email dispatch. */
 export const transporter = createTransporter();

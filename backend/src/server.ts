@@ -7,7 +7,6 @@ import postRoutes from './routes/postRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 import { aiRoutes } from './routes/aiRoutes.js';
-import sportsRoutes from './routes/sportsRoutes.js';
 
 import express from 'express';
 import helmet from 'helmet';
@@ -69,7 +68,6 @@ app.use('/api/posts', postRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/ai', aiRoutes);
-app.use('/api/sports', sportsRoutes);
 // Health Check Endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date() });
