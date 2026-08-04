@@ -1,24 +1,55 @@
+/**
+ * @module ErrorBoundary
+ *
+ * Catches JavaScript errors anywhere in the child component tree,
+ * logs those errors, and displays a fallback UI instead of crashing the application.
+ */
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 interface Props {
+  /** @type {ReactNode | undefined} The child components to be rendered and monitored for errors. */
   children?: ReactNode;
 }
 
 interface State {
+  /** @type {boolean} True if an error has been caught in the child component tree. */
   hasError: boolean;
+  /** @type {Error | null} The caught error object, or null if no error has occurred. */
   error: Error | null;
 }
 
+/**
+ * Represents a React Error Boundary component.
+ *
+ * Wraps around other components to catch rendering errors, preventing the
+ * entire application from unmounting. Provides a user-friendly fallback
+ * interface with a recovery option (page refresh).
+ *
+ * @class
+ * @extends {Component}
+ */
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null,
   };
 
+  /**
+   * Updates state so the next render will show the fallback UI.
+   *
+   * @param  {Error}  error  The error that was thrown by a child component.
+   * @returns {State}  The new state indicating an error occurred.
+   */
   public static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
+  /**
+   * Logs error information to the console for debugging purposes.
+   *
+   * @param  {Error}      error      The error that was thrown.
+   * @param  {ErrorInfo}  errorInfo  Additional information about the error, such as the component stack.
+   */
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error in React render tree:', error, errorInfo);
   }
