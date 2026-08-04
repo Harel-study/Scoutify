@@ -1,6 +1,18 @@
+/**
+ * @module JobSlice
+ *
+ * Manages the global state for the jobs board, including listing jobs,
+ * viewing job details, and creating or applying to job postings.
+ */
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import api from '../../utils/axios';
 
+/**
+ * Represents a job posting within the platform.
+ * 
+ * Contains details about the role, location, and the user or team
+ * that created the posting.
+ */
 export interface IJob {
   _id: string;
   profileId: {
@@ -40,6 +52,13 @@ const initialState: JobState = {
   error: null,
 };
 
+/**
+ * Fetches a list of job postings, optionally filtered by search parameters.
+ *
+ * @param  {Record<string, string>}  [filters={}]  Optional query parameters for filtering jobs (e.g., city, jobType).
+ * @returns {Promise<IJob[]>}  The array of job postings matching the criteria.
+ * @throws  {string}  The error message if the request fails.
+ */
 export const fetchJobs = createAsyncThunk(
   'jobs/fetchJobs',
   async (filters: Record<string, string> = {}, { rejectWithValue }) => {
@@ -53,6 +72,15 @@ export const fetchJobs = createAsyncThunk(
   }
 );
 
+/**
+ * Fetches the complete details for a specific job posting.
+ *
+ * Sets the retrieved job as the `currentJob` in the state.
+ *
+ * @param  {string}  jobId  The unique ID of the job to fetch.
+ * @returns {Promise<IJob>}  The detailed job object.
+ * @throws  {string}  The error message if the request fails.
+ */
 export const fetchJobDetails = createAsyncThunk(
   'jobs/fetchJobDetails',
   async (jobId: string, { rejectWithValue }) => {
@@ -65,6 +93,15 @@ export const fetchJobDetails = createAsyncThunk(
   }
 );
 
+/**
+ * Creates a new job posting on the platform.
+ *
+ * The newly created job is prepended to the local jobs list state upon success.
+ *
+ * @param  {Partial<IJob>}  jobData  The data payload for the new job.
+ * @returns {Promise<IJob>}  The successfully created job object from the server.
+ * @throws  {string}  The error message if creation fails.
+ */
 export const createJob = createAsyncThunk(
   'jobs/createJob',
   async (jobData: Partial<IJob>, { rejectWithValue }) => {
@@ -77,6 +114,17 @@ export const createJob = createAsyncThunk(
   }
 );
 
+/**
+ * Updates an existing job posting.
+ *
+ * Updates the job in the local list and also updates `currentJob` if it matches.
+ *
+ * @param  {Object}  args  The payload arguments.
+ * @param  {string}  args.jobId  The ID of the job to update.
+ * @param  {Partial<IJob>}  args.jobData  The fields to update.
+ * @returns {Promise<IJob>}  The updated job object from the server.
+ * @throws  {string}  The error message if the update fails.
+ */
 export const updateJob = createAsyncThunk(
   'jobs/updateJob',
   async ({ jobId, jobData }: { jobId: string; jobData: Partial<IJob> }, { rejectWithValue }) => {
@@ -89,6 +137,15 @@ export const updateJob = createAsyncThunk(
   }
 );
 
+/**
+ * Permanently deletes a job posting.
+ *
+ * Removes the job from the local list and clears `currentJob` if it matches.
+ *
+ * @param  {string}  jobId  The ID of the job to delete.
+ * @returns {Promise<string>}  The ID of the successfully deleted job.
+ * @throws  {string}  The error message if deletion fails.
+ */
 export const deleteJob = createAsyncThunk(
   'jobs/deleteJob',
   async (jobId: string, { rejectWithValue }) => {
@@ -101,6 +158,13 @@ export const deleteJob = createAsyncThunk(
   }
 );
 
+/**
+ * Submits an application to a specific job posting for the current user.
+ *
+ * @param  {string}  jobId  The ID of the job to apply for.
+ * @returns {Promise<{jobId: string, message: string}>}  A success message from the server.
+ * @throws  {string}  The error message if the application submission fails.
+ */
 export const applyToJob = createAsyncThunk(
   'jobs/applyToJob',
   async (jobId: string, { rejectWithValue }) => {
@@ -117,6 +181,10 @@ const jobSlice = createSlice({
   name: 'jobs',
   initialState,
   reducers: {
+    /**
+     * Clears the currently viewed job from the state.
+     * Useful for resetting the view when navigating away from a job details page.
+     */
     clearCurrentJob: (state) => {
       state.currentJob = null;
     }

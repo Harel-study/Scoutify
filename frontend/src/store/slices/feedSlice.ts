@@ -1,11 +1,26 @@
+/**
+ * @module FeedSlice
+ *
+ * Manages the global state for the activity feed, including posts,
+ * media, comments, and likes. Handlers interface with the posts API.
+ */
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import api from '../../utils/axios';
 
+/**
+ * Represents a single piece of media attached to a post.
+ */
 export interface IMedia {
   url: string;
   type: 'image' | 'video' | 'document';
 }
 
+/**
+ * Represents a user comment on a feed post.
+ * 
+ * Includes nested user details to display the commenter's profile
+ * information inline without fetching additional data.
+ */
 export interface IComment {
   _id: string;
   user: {
@@ -19,6 +34,12 @@ export interface IComment {
   createdAt: string;
 }
 
+/**
+ * Represents a post in the activity feed.
+ * 
+ * Posts can be created by Users or Teams and can contain media, 
+ * comments, and likes. Includes the nested profile details of the creator.
+ */
 export interface IPost {
   _id: string;
   profileId: {
@@ -58,6 +79,15 @@ const initialState: FeedState = {
   error: null,
 };
 
+/**
+ * Fetches the global activity feed.
+ *
+ * Resolves to an array of posts populated with their creators' profiles,
+ * comments, and like counts.
+ *
+ * @returns {Promise<IPost[]>}  The array of feed posts.
+ * @throws  {string}  The error message if the fetch request fails.
+ */
 export const fetchFeed = createAsyncThunk('feed/fetchFeed', async (_, { rejectWithValue }) => {
   try {
     const response = await api.get('/posts');
@@ -67,6 +97,16 @@ export const fetchFeed = createAsyncThunk('feed/fetchFeed', async (_, { rejectWi
   }
 });
 
+/**
+ * Submits a new post to the feed.
+ *
+ * Handles `multipart/form-data` payloads to support media uploads alongside text.
+ * The new post is appended directly to the top of the feed state upon success.
+ *
+ * @param  {FormData}  formData  The form data containing text content and optional files.
+ * @returns {Promise<IPost>}  The successfully created post object.
+ * @throws  {string}  The error message if post creation fails.
+ */
 export const createPost = createAsyncThunk(
   'feed/createPost',
   async (formData: FormData, { rejectWithValue }) => {
@@ -83,6 +123,15 @@ export const createPost = createAsyncThunk(
   }
 );
 
+/**
+ * Toggles the current user's like status on a specific post.
+ *
+ * Updates the post's like array locally in state based on the server response.
+ *
+ * @param  {string}  postId  The ID of the post to like or unlike.
+ * @returns {Promise<{postId: string, likes: string[], likesCount: number, liked: boolean}>} The updated like status and count.
+ * @throws  {string}  The error message if the request fails.
+ */
 export const toggleLike = createAsyncThunk(
   'feed/toggleLike',
   async (postId: string, { rejectWithValue }) => {
@@ -95,6 +144,15 @@ export const toggleLike = createAsyncThunk(
   }
 );
 
+/**
+ * Permanently deletes a post by ID.
+ *
+ * Removes the post from the local feed state upon successful deletion on the server.
+ *
+ * @param  {string}  postId  The ID of the post to delete.
+ * @returns {Promise<string>}  The ID of the successfully deleted post.
+ * @throws  {string}  The error message if the deletion request fails.
+ */
 export const deletePost = createAsyncThunk(
   'feed/deletePost',
   async (postId: string, { rejectWithValue }) => {
@@ -107,6 +165,18 @@ export const deletePost = createAsyncThunk(
   }
 );
 
+/**
+ * Appends a new comment to a post.
+ *
+ * Returns the fully updated post from the server, which includes the populated
+ * user details for the new comment, and replaces the local comments array.
+ *
+ * @param  {Object}  args  The comment payload arguments.
+ * @param  {string}  args.postId  The ID of the post being commented on.
+ * @param  {string}  args.text    The text content of the comment.
+ * @returns {Promise<{postId: string, post: IPost}>}  The post ID and the updated post object.
+ * @throws  {string}  The error message if the comment request fails.
+ */
 export const addComment = createAsyncThunk(
   'feed/addComment',
   async ({ postId, text }: { postId: string; text: string }, { rejectWithValue }) => {
