@@ -1,3 +1,9 @@
+/**
+ * @module AuthContext
+ *
+ * Manages global authentication state, session persistence, and provides
+ * functions for logging in, registering, and logging out via the API.
+ */
 /* eslint-disable react-refresh/only-export-components */
 import React, {
   createContext,
@@ -8,38 +14,93 @@ import React, {
 import api from '../utils/axios';
 
 export interface User {
+  /** @type {string} Unique identifier for the user. */
   id: string;
+  /** @type {string} Display name of the user. */
   username: string;
+  /** @type {string | undefined} Optional email address. */
   email?: string;
+  /** @type {'player' | 'team' | 'staff'} The type of account role. */
   role: 'player' | 'team' | 'staff';
 }
 
 interface GoogleLoginResult {
+  /** @type {boolean | undefined} True if the user needs to select a role to complete registration. */
   needsRoleSelection?: boolean;
+  /** @type {string | undefined} Email address returned from Google. */
   email?: string;
+  /** @type {string | undefined} Google unique ID. */
   googleId?: string;
 }
 
 interface AuthContextType {
+  /** @type {User | null} The currently authenticated user, or null if unauthenticated. */
   user: User | null;
+  /** @type {boolean} True if the session status is currently being verified. */
   loading: boolean;
+  /**
+   * Authenticates a user with username and password.
+   *
+   * @param  {string}  username  The username.
+   * @param  {string}  password  The password.
+   * @returns {Promise<void>} Resolves on success.
+   * @throws  {Error} If login fails.
+   */
   login: (username: string, password: string) => Promise<void>;
+  /**
+   * Registers a new user.
+   *
+   * @param  {string}  username  The username.
+   * @param  {string}  email     The email address.
+   * @param  {string}  password  The password.
+   * @param  {'player' | 'team' | 'staff'}  role  The selected role.
+   * @returns {Promise<void>} Resolves on success.
+   * @throws  {Error} If registration fails.
+   */
   register: (
     username: string,
     email: string,
     password: string,
     role: 'player' | 'team' | 'staff'
 ) => Promise<void>;
+  /**
+   * Authenticates or registers a user via Google ID Token.
+   *
+   * @param  {string}  idToken  Google ID token.
+   * @param  {'player' | 'team' | 'staff'}  [role]  Optional role if completing registration.
+   * @returns {Promise<GoogleLoginResult>} Contains registration context if role is missing.
+   * @throws  {Error} If authentication fails.
+   */
   googleLogin: (
     idToken: string,
     role?: 'player' | 'team' | 'staff'
   ) => Promise<GoogleLoginResult>;
+  /**
+   * Logs out the current user and clears local session data.
+   *
+   * @returns {Promise<void>} Resolves when logout is complete.
+   */
   logout: () => Promise<void>;
+  /**
+   * Verifies the current session token with the backend API.
+   *
+   * @returns {Promise<void>} Resolves when session check completes.
+   */
   checkSession: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+/**
+ * Provides authentication state and methods to the component tree.
+ *
+ * Automatically verifies session state on mount and listens for auth-expired
+ * events to handle session termination gracefully.
+ *
+ * @param  {object}           props           The component props.
+ * @param  {React.ReactNode}  props.children  The child components.
+ * @returns {React.ReactElement} The Auth Provider element.
+ */
 export const AuthProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
@@ -229,6 +290,14 @@ export const AuthProvider: React.FC<{
     </AuthContext.Provider>
   );
 };
+/**
+ * Hook to access the authentication context.
+ *
+ * Must be used within an AuthProvider component tree.
+ *
+ * @returns {AuthContextType} The current authentication context values.
+ * @throws  {Error} If called outside of an AuthProvider.
+ */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
