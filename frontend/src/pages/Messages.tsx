@@ -1,3 +1,10 @@
+/**
+ * @module Messages
+ *
+ * Renders the direct messaging interface.
+ * Handles displaying conversation lists, message history, sending messages,
+ * and simulating real-time updates via polling.
+ */
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../store';
@@ -12,12 +19,27 @@ import { useSearchParams } from 'react-router-dom';
 import { SidebarSkeleton } from '../components/SkeletonLoader';
 import { Send, MessageSquare } from 'lucide-react';
 
+/**
+ * Renders the messages page layout including the sidebar for conversations
+ * and the main chat window.
+ *
+ * Automatically polls for new messages for the active partner and handles
+ * deep linking to specific chats via URL parameters.
+ *
+ * @returns {React.ReactElement} The Messages component.
+ */
 export const Messages: React.FC = () => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
   const [searchParams, setSearchParams] = useSearchParams();
   const targetUserParam = searchParams.get('user');
 
+  /**
+   * Parses message text to convert URLs into clickable anchor elements.
+   *
+   * @param {string} text  The raw message text.
+   * @returns {React.ReactNode[]} An array of strings and React elements.
+   */
   const renderMessageContent = (text: string) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.split(urlRegex).map((part, i) => {
@@ -69,12 +91,24 @@ export const Messages: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeMessages]);
 
+  /**
+   * Selects a chat partner, updating the active state and URL parameter,
+   * then fetches their message history.
+   *
+   * @param {string} partnerId  The unique identifier of the selected chat partner.
+   */
   const handleSelectPartner = (partnerId: string) => {
     setSearchParams({ user: partnerId });
     dispatch(setActivePartner(partnerId));
     dispatch(fetchMessageHistory(partnerId));
   };
 
+  /**
+   * Submits the new message form and dispatches the send action to the Redux store.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   * @returns {Promise<void>} Resolves when the message send completes.
+   */
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!messageText.trim() || !activePartnerId) return;

@@ -1,8 +1,22 @@
+/**
+ * @module Login
+ *
+ * Renders the user login page.
+ * Provides forms for username/password authentication as well as a mock Google SSO login.
+ */
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Lock, LogIn, AlertCircle } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
+/**
+ * Renders the login page.
+ *
+ * Handles user authentication via standard credentials or simulated Google SSO.
+ * On successful login, redirects the user to the home page.
+ *
+ * @returns {React.ReactElement} The Login component.
+ */
 export const Login: React.FC = () => {
   const { login, googleLogin } = useAuth();
   const [username, setUsername] = useState('');
@@ -12,6 +26,15 @@ export const Login: React.FC = () => {
   const [showGoogleMock, setShowGoogleMock] = useState(false);
   const navigate = useNavigate();
 
+  /**
+   * Submits the login form using username and password.
+   *
+   * Calls the authentication context login method. If successful, redirects to the home page.
+   * If it fails, displays an error message.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   * @returns {Promise<void>} Resolves when the authentication process completes.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -26,6 +49,16 @@ export const Login: React.FC = () => {
     }
   };
 
+  /**
+   * Simulates a Google SSO login process.
+   *
+   * Attempts to log in with a generated mock token. If the mock account doesn't exist,
+   * prompts the user to select a role to complete registration.
+   *
+   * @param {string} mockUsername  The simulated username for the Google account.
+   * @param {"player" | "team" | "staff"} [role]  The optional role to assign if registering.
+   * @returns {Promise<void>} Resolves when the mock authentication completes.
+   */
   const handleMockGoogleLogin = async (mockUsername: string, role?: 'player' | 'team' | 'staff') => {
     setError('');
     setLoading(true);

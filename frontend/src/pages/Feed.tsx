@@ -1,3 +1,9 @@
+/**
+ * @module Feed
+ *
+ * Renders the main activity feed where users can view posts and create new ones.
+ * Integrates AI-powered post generation and media uploads.
+ */
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { type AppDispatch, type RootState } from '../store';
@@ -7,6 +13,14 @@ import { CardSkeleton } from '../components/SkeletonLoader';
 import { useAuth } from '../context/AuthContext';
 import { Send, Image, MapPin, Tag, X, FileText, Sparkles } from 'lucide-react';
 import { generateAiPost, type AiPostResult } from '../services/aiService';
+/**
+ * Renders the main activity feed where users can view posts and create new ones.
+ *
+ * Handles fetching the feed data from the Redux store, composing new posts
+ * with optional media and metadata, and generating post content using AI.
+ *
+ * @returns {React.ReactElement} The Feed component.
+ */
 export const Feed: React.FC = () => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
@@ -28,6 +42,11 @@ export const Feed: React.FC = () => {
     dispatch(fetchFeed());
   }, [dispatch]);
 
+  /**
+   * Handles the selection of a file for upload, generating a local preview if it is an image.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e  The file input change event.
+   */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
@@ -40,12 +59,20 @@ export const Feed: React.FC = () => {
     }
   };
 
+  /**
+   * Clears the currently selected file and its preview from state.
+   */
   const handleRemoveFile = () => {
     setFile(null);
     setFilePreview('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
-const handleGenerateWithAi = async (): Promise<void> => {
+  /**
+   * Generates a polished post using the AI service based on the user's draft content.
+   *
+   * @returns {Promise<void>} Resolves when the AI generation completes.
+   */
+  const handleGenerateWithAi = async (): Promise<void> => {
   const trimmedContent = content.trim();
 
   if (!trimmedContent) {
@@ -68,6 +95,12 @@ const handleGenerateWithAi = async (): Promise<void> => {
     setGeneratingAi(false);
   }
 };
+  /**
+   * Submits the new post form, dispatching the creation action to the Redux store.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   * @returns {Promise<void>} Resolves when the post creation completes.
+   */
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() && !file) return;

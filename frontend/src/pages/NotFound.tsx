@@ -1,7 +1,20 @@
+/**
+ * @module NotFound
+ *
+ * Renders the 404 error page for unmatched routes.
+ */
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './NotFound.css';
 
+/**
+ * Renders a stylized 404 page indicating the requested route does not exist.
+ *
+ * Provides users with navigation options to return to the home page or
+ * the previous page.
+ *
+ * @returns {React.ReactElement} The NotFound component.
+ */
 export const NotFound: React.FC = () => {
   const navigate = useNavigate();
 

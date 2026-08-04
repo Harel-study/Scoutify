@@ -1,3 +1,9 @@
+/**
+ * @module Jobs
+ *
+ * Renders the job board page where users can browse, search, and filter job listings.
+ * Authorized recruiters can also post new job opportunities from this page.
+ */
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { AppDispatch, RootState } from '../store';
@@ -7,6 +13,14 @@ import { JobSkeleton } from '../components/SkeletonLoader';
 import { useAuth } from '../context/AuthContext';
 import { Search, Briefcase, MapPin, Plus, X } from 'lucide-react';
 
+/**
+ * Renders the main job board page.
+ *
+ * Displays a list of available jobs, provides filtering options (by title, city, type),
+ * and includes a modal for authorized staff/team members to create new job postings.
+ *
+ * @returns {React.ReactElement} The Jobs component.
+ */
 export const Jobs: React.FC = () => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
@@ -29,6 +43,11 @@ export const Jobs: React.FC = () => {
     dispatch(fetchJobs({}));
   }, [dispatch]);
 
+  /**
+   * Applies the current search terms and filters, triggering a new fetch from the Redux store.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   */
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const filters: Record<string, string> = {};
@@ -38,6 +57,12 @@ export const Jobs: React.FC = () => {
     dispatch(fetchJobs(filters));
   };
 
+  /**
+   * Submits the new job posting form, dispatching the creation action to the Redux store.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   * @returns {Promise<void>} Resolves when the job creation completes.
+   */
   const handlePostJob = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !description.trim() || !city.trim()) return;

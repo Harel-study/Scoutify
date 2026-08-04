@@ -1,14 +1,36 @@
+/**
+ * @module ForgotPassword
+ *
+ * Renders the forgot password page where users can request a password reset link.
+ */
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, ArrowRight, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
 import { forgotPassword } from '../services/authService';
 
+/**
+ * Renders the forgot password page.
+ *
+ * Handles validating the user's email input, calling the authentication service
+ * to request a password reset email, and displaying success or error messages.
+ *
+ * @returns {React.ReactElement} The ForgotPassword component.
+ */
 export const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  /**
+   * Submits the forgot password form.
+   *
+   * Validates the email address format before calling the API. Updates loading state
+   * and sets either a success message or an error message based on the response.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   * @returns {Promise<void>} Resolves when the submission process completes.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');

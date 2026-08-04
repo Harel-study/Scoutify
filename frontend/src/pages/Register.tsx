@@ -1,8 +1,23 @@
+/**
+ * @module Register
+ *
+ * Renders the user registration page.
+ * Provides a form to create a new account with email/password and role selection,
+ * or allows simulating registration via a mock Google SSO flow.
+ */
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import {User, Users, UserPlus, Mail, Lock, AlertCircle } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
+/**
+ * Renders the registration page.
+ *
+ * Handles new account creation, allowing the user to select their profile role
+ * (player, team, or staff). Includes fallback to mock Google SSO registration.
+ *
+ * @returns {React.ReactElement} The Register component.
+ */
 export const Register: React.FC = () => {
   const { register, googleLogin } = useAuth();
   const [username, setUsername] = useState('');
@@ -14,6 +29,15 @@ export const Register: React.FC = () => {
   const [showGoogleMock, setShowGoogleMock] = useState(false);
   const navigate = useNavigate();
 
+  /**
+   * Submits the registration form using the provided credentials and selected role.
+   *
+   * Calls the authentication context register method. On success, redirects to the home page.
+   * On failure, displays an error message to the user.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   * @returns {Promise<void>} Resolves when the registration process completes.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -28,6 +52,13 @@ export const Register: React.FC = () => {
     }
   };
 
+  /**
+   * Simulates a Google SSO registration process for a specific user and role.
+   *
+   * @param {string} mockUsername  The mock Google account username to register.
+   * @param {"player" | "team" | "staff"} selectedRole  The role to assign to the new account.
+   * @returns {Promise<void>} Resolves when the mock registration completes.
+   */
   const handleMockGoogleLogin = async (mockUsername: string, selectedRole: 'player' | 'team' | 'staff') => {
     setError('');
     setLoading(true);

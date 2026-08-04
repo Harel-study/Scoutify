@@ -1,8 +1,22 @@
+/**
+ * @module ResetPassword
+ *
+ * Renders the password reset page.
+ * Allows users who have received a reset token via email to set a new password.
+ */
 import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
 import { resetPassword } from '../services/authService';
 
+/**
+ * Renders the password reset form.
+ *
+ * Reads the reset token from the URL parameters, validates the new password input,
+ * and submits the update to the authentication service.
+ *
+ * @returns {React.ReactElement} The ResetPassword component.
+ */
 export const ResetPassword: React.FC = () => {
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
@@ -16,6 +30,15 @@ export const ResetPassword: React.FC = () => {
   const [error, setError] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
 
+  /**
+   * Submits the new password form.
+   *
+   * Validates the token presence, password length, and password confirmation match.
+   * On success, displays a success message and redirects to the login page after a delay.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   * @returns {Promise<void>} Resolves when the reset process completes.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');

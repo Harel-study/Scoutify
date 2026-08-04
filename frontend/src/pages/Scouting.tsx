@@ -1,9 +1,24 @@
+/**
+ * @module Scouting
+ *
+ * Renders the scouting hub page.
+ * Allows users to search and filter through athletes, teams, and staff profiles.
+ */
 import React, { useEffect, useState, useCallback } from 'react';
 import api from '../utils/axios';
 import { ProfileCard } from '../components/ProfileCard';
 import { ProfileSkeleton } from '../components/SkeletonLoader';
 import { Search } from 'lucide-react';
 
+/**
+ * Renders the Scouting hub interface.
+ *
+ * Provides a dynamic search and filter form to find user profiles based on
+ * role, position, recruitment status, and job seeking status. Displays the results
+ * in a grid of profile cards.
+ *
+ * @returns {React.ReactElement} The Scouting component.
+ */
 export const Scouting: React.FC = () => {
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -16,6 +31,11 @@ export const Scouting: React.FC = () => {
   const [recruiting, setRecruiting] = useState('');
   const [isLookingForJob, setIsLookingForJob] = useState('');
 
+  /**
+   * Fetches user profiles from the API based on the currently selected filter criteria.
+   *
+   * @returns {Promise<void>} Resolves when the profile search completes.
+   */
   const fetchProfiles = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -41,6 +61,11 @@ export const Scouting: React.FC = () => {
     fetchProfiles();
   }, [fetchProfiles]); // Trigger search when dependencies change
 
+  /**
+   * Submits the filter form to manually trigger a profile search.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   */
   const handleFilterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     fetchProfiles();

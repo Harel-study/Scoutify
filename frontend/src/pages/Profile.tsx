@@ -1,3 +1,11 @@
+/**
+ * @module Profile
+ *
+ * Renders the user profile page.
+ * Allows users to view their profile or other users' profiles, and provides forms
+ * for the authenticated user to update their own profile details based on their role
+ * (player, team, or staff).
+ */
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import api from '../utils/axios';
 import { useAuth } from '../context/AuthContext';
@@ -15,6 +23,15 @@ import {
 } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
+/**
+ * Renders the profile view and editing interface.
+ *
+ * Fetches profile data dynamically based on the URL parameter or the authenticated user.
+ * Provides tailored form fields for different roles (Player, Team, Staff) and handles
+ * profile updates including image and CV uploads.
+ *
+ * @returns {React.ReactElement} The Profile component.
+ */
 export const Profile: React.FC = () => {
   const { user } = useAuth();
   const { userId } = useParams<{ userId?: string }>();
@@ -68,6 +85,11 @@ export const Profile: React.FC = () => {
   const [deleteCv, setDeleteCv] = useState(false);
   const cvFileInputRef = useRef<HTMLInputElement>(null);
 
+  /**
+   * Fetches the profile data from the API and initializes form states based on the user's role.
+   *
+   * @returns {Promise<void>} Resolves when the profile data is loaded.
+   */
   const fetchProfile = useCallback(async (): Promise<void> => {
     setLoading(true);
     setError('');
@@ -142,6 +164,11 @@ export const Profile: React.FC = () => {
       void fetchProfile();
     }
   }, [user, fetchProfile]);
+  /**
+   * Handles the selection of a new profile image and generates a local preview.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e  The file input change event.
+   */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -150,6 +177,12 @@ export const Profile: React.FC = () => {
     }
   };
 
+  /**
+   * Submits the updated profile data to the API, including text fields and optional file uploads.
+   *
+   * @param {React.FormEvent} e  The form submission event.
+   * @returns {Promise<void>} Resolves when the profile update is complete.
+   */
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(false);
