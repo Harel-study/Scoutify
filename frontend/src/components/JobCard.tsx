@@ -1,3 +1,10 @@
+/**
+ * @module JobCard
+ *
+ * Displays an individual job posting.
+ * Handles polymorphic job poster profiles, job details formatting,
+ * and user interactions such as applying for or deleting a job.
+ */
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../store';
@@ -6,9 +13,20 @@ import { useAuth } from '../context/AuthContext';
 import { MapPin, Clock, Trash2, CheckCircle2 } from 'lucide-react';
 
 interface JobCardProps {
+  /** @type {IJob} The job listing data to render, including title, description, and poster info. */
   job: IJob;
 }
 
+/**
+ * Renders a single job listing card.
+ *
+ * Automatically resolves the job poster's profile and displays the job's
+ * meta-information (type, location, date). Allows the listing owner to delete it,
+ * and other users to submit an application.
+ *
+ * @param  {JobCardProps}       props  The component props.
+ * @returns {React.ReactElement}  The rendered job card component.
+ */
 export const JobCard: React.FC<JobCardProps> = ({ job }) => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();

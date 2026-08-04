@@ -1,46 +1,47 @@
+/**
+ * @module LoadingScreen
+ *
+ * Displays a full-screen or container-relative loading overlay.
+ * Features a 3D animated soccer ball with configurable delay and minimum
+ * display duration to prevent UI flickering on fast network responses.
+ */
 import React from 'react';
 import { useDelayedLoading } from '../hooks/useDelayedLoading';
 import './LoadingScreen.css';
 
 export interface LoadingScreenProps {
-  /**
-   * Controls whether the overlay is active.
-   */
+  /** @type {boolean | undefined} Controls whether the overlay is active. */
   isVisible?: boolean;
 
-  /**
-   * Delay in milliseconds before showing the overlay (prevents flicker on fast loads).
-   * Default is 100ms.
-   */
+  /** @type {number | undefined} Delay in milliseconds before showing the overlay (prevents flicker on fast loads). Default is 100ms. */
   delay?: number;
 
-  /**
-   * Minimum duration in milliseconds the overlay remains visible once shown.
-   * Default is 900ms.
-   */
+  /** @type {number | undefined} Minimum duration in milliseconds the overlay remains visible once shown. Default is 900ms. */
   minDuration?: number;
 
-  /**
-   * Primary loading message
-   */
+  /** @type {string | undefined} Primary loading message. */
   message?: string;
 
-  /**
-   * Secondary description text
-   */
+  /** @type {string | undefined} Secondary description text. */
   subtext?: string;
 
-  /**
-   * Visual theme mode ('dark' | 'light'). Defaults to 'dark'.
-   */
+  /** @type {'dark' | 'light' | undefined} Visual theme mode. Defaults to 'dark'. */
   theme?: 'dark' | 'light';
 
-  /**
-   * Custom className for container override
-   */
+  /** @type {string | undefined} Custom className for container override. */
   className?: string;
 }
 
+/**
+ * Renders an animated loading screen overlay.
+ *
+ * Uses a delayed rendering strategy to avoid brief flashes of the loading state
+ * during quick operations, while ensuring a minimum display time once rendered
+ * for a smooth user experience.
+ *
+ * @param  {LoadingScreenProps}  props  The component props.
+ * @returns {React.ReactElement | null}  The rendered loading screen, or null if hidden.
+ */
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   isVisible = true,
   delay = 100,

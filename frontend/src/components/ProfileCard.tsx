@@ -1,11 +1,28 @@
+/**
+ * @module ProfileCard
+ *
+ * Displays a summarized view of a user or team profile.
+ * Intelligently formats data depending on the profile type (player, staff, or team)
+ * and provides quick actions like direct messaging.
+ */
 import React from 'react';
 import { MapPin, Briefcase, Footprints, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface ProfileCardProps {
+  /** @type {any} The profile object containing type-specific details (player, staff, or team). */
   profile: any;
 }
 
+/**
+ * Renders a card displaying high-level information about a scouted profile.
+ *
+ * Determines the display format based on the profile's role, extracts the appropriate
+ * avatar and status, and provides a quick link to initiate a direct message.
+ *
+ * @param  {ProfileCardProps}   props  The component props.
+ * @returns {React.ReactElement} The rendered profile card.
+ */
 export const ProfileCard: React.FC<ProfileCardProps> = ({ profile }) => {
   const navigate = useNavigate();
 

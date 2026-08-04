@@ -1,3 +1,10 @@
+/**
+ * @module FeedCard
+ *
+ * Displays an individual post in the feed.
+ * Handles polymorphic user profiles (Team or User), media rendering,
+ * and user interactions like liking, commenting, and deleting posts.
+ */
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../store';
@@ -6,9 +13,20 @@ import { useAuth } from '../context/AuthContext';
 import { Heart, Trash2, MapPin, Tag, MessageCircle, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 interface FeedCardProps {
+  /** @type {IPost} The post data to render, containing content, media, and author details. */
   post: IPost;
 }
 
+/**
+ * Renders a single post card in the feed.
+ *
+ * Automatically resolves the author's profile depending on whether they are
+ * a Team or an individual User. Provides interactive features such as liking,
+ * commenting, and navigating to the author's profile.
+ *
+ * @param  {FeedCardProps}       props  The component props.
+ * @returns {React.ReactElement}  The rendered feed card component.
+ */
 export const FeedCard: React.FC<FeedCardProps> = ({ post }) => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();

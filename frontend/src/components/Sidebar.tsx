@@ -1,8 +1,23 @@
+/**
+ * @module Sidebar
+ *
+ * Primary side navigation component for authenticated users.
+ * Displays routing links and a brief summary of the current user's profile.
+ */
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Rss, Briefcase, Search, MessageSquare, User as UserIcon } from 'lucide-react';
 
+/**
+ * Renders the desktop sidebar navigation.
+ *
+ * Maps through the application's core routes to render NavLinks, and displays
+ * the logged-in user's role and email/username at the bottom. Returns null
+ * if the user is not authenticated.
+ *
+ * @returns {React.ReactElement | null} The rendered sidebar, or null if unauthenticated.
+ */
 export const Sidebar: React.FC = () => {
   const { user } = useAuth();
 

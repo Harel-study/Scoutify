@@ -1,12 +1,30 @@
+/**
+ * @module ProtectedRoute
+ *
+ * Wraps routes that require authentication and optional role-based authorization.
+ * Handles the loading state while the authentication session is being verified.
+ */
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface ProtectedRouteProps {
+  /** @type {React.ReactNode} The component(s) to render if access is granted. */
   children: React.ReactNode;
+  /** @type {Array<'player' | 'team' | 'staff'> | undefined} Allowed user roles for this route. If omitted, all authenticated roles are permitted. */
   allowedRoles?: Array<'player' | 'team' | 'staff'>;
 }
 
+/**
+ * A wrapper component that enforces route-level access control.
+ *
+ * Verifies that a valid user session exists. If the session is loading, a spinner is displayed.
+ * Unauthenticated users are redirected to the login page.
+ * Authenticated users lacking the required role are redirected to the home feed.
+ *
+ * @param  {ProtectedRouteProps}  props  The component props.
+ * @returns {React.ReactElement} The protected children or a redirection component.
+ */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
   allowedRoles 

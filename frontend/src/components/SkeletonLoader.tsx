@@ -1,5 +1,17 @@
+/**
+ * @module SkeletonLoader
+ *
+ * Provides a collection of skeleton loading components (Card, Job, Profile, Sidebar).
+ * These components render animated placeholder UI elements to improve perceived
+ * performance while content is being fetched.
+ */
 import React from 'react';
 
+/**
+ * Renders a skeleton placeholder for a feed post or standard card.
+ *
+ * @returns {React.ReactElement} The card skeleton component.
+ */
 export const CardSkeleton: React.FC = () => {
   return (
     <div className="bg-dark-800 border border-dark-700 p-5 rounded-2xl animate-pulse space-y-4">
@@ -23,6 +35,11 @@ export const CardSkeleton: React.FC = () => {
   );
 };
 
+/**
+ * Renders a skeleton placeholder for a job board listing.
+ *
+ * @returns {React.ReactElement} The job skeleton component.
+ */
 export const JobSkeleton: React.FC = () => {
   return (
     <div className="bg-dark-800 border border-dark-700 p-6 rounded-2xl animate-pulse space-y-4">
@@ -45,6 +62,13 @@ export const JobSkeleton: React.FC = () => {
   );
 };
 
+/**
+ * Renders a skeleton placeholder for a user or team profile view.
+ *
+ * Includes placeholders for a cover image, avatar, bio text, and stat counters.
+ *
+ * @returns {React.ReactElement} The profile skeleton component.
+ */
 export const ProfileSkeleton: React.FC = () => {
   return (
     <div className="bg-dark-800 border border-dark-700 rounded-2xl animate-pulse">
@@ -74,6 +98,11 @@ export const ProfileSkeleton: React.FC = () => {
   );
 };
 
+/**
+ * Renders a skeleton placeholder for the sidebar navigation or user list.
+ *
+ * @returns {React.ReactElement} The sidebar skeleton component.
+ */
 export const SidebarSkeleton: React.FC = () => {
   return (
     <div className="space-y-3 animate-pulse">

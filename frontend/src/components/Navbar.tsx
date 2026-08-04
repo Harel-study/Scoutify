@@ -1,3 +1,10 @@
+/**
+ * @module Navbar
+ *
+ * Primary application navigation bar.
+ * Provides access to main routes, notification polling, theme toggling,
+ * and user session management (logout).
+ */
 import React, { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -5,6 +12,14 @@ import { Sun, Moon, Bell, LogOut, Check, Menu, X } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../utils/axios';
 
+/**
+ * Renders the top navigation bar of the application.
+ *
+ * Manages notification state via polling, handles responsive mobile menus,
+ * and integrates with AuthContext and ThemeContext for global actions.
+ *
+ * @returns {React.ReactElement} The rendered navigation bar.
+ */
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
