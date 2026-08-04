@@ -1,7 +1,23 @@
+/**
+ * @module AxiosClient
+ *
+ * Configures and provides a pre-configured Axios instance for API communication.
+ * Handles automatic attachment of authorization headers and silent refresh token rotation
+ * on 401 Unauthorized responses.
+ */
 import axios from 'axios';
 
 // Get API base URL from Vite environment, fallback to localhost:5000
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+/**
+ * Pre-configured Axios instance for making authenticated requests to the API.
+ * Automatically handles attaching the Bearer token and rotating expired tokens.
+ *
+ * @example
+ * import api from '@/utils/axios';
+ * const response = await api.get('/users/profile');
+ */
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true, // Enables sending/receiving HttpOnly cookies (refresh token)
@@ -23,8 +39,19 @@ api.interceptors.request.use(
   }
 );
 // Response Interceptor: Handle expired tokens
+
+/** @type {boolean} True if a token refresh request is currently in flight. */
 let isRefreshing = false;
+
+/** @type {Array<{resolve: Function, reject: Function}>} Requests queued while waiting for a new token. */
 let failedQueue: any[] = [];
+
+/**
+ * Resolves or rejects all pending queued requests when a token refresh completes.
+ *
+ * @param  {any}            error    The error if the token refresh failed, or null if successful.
+ * @param  {string | null}  [token]  The new access token, provided if the refresh was successful.
+ */
 const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {

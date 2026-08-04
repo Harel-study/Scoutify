@@ -1,3 +1,10 @@
+/**
+ * @module App
+ *
+ * Root component that initializes the application and configures the main routing layout.
+ * Integrates global providers for Redux state, authentication, theming, and error handling.
+ */
+
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -24,12 +31,28 @@ const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
-// Loading fallback for lazy components using new LoadingScreen
+/**
+ * Displays a full-page loading screen with a consistent message.
+ *
+ * Used as a fallback component for React.Suspense when lazy loading routes
+ * to ensure a smooth transition and visual feedback while chunks are fetched.
+ *
+ * @returns {React.ReactElement} The loading screen UI.
+ */
 const PageLoader: React.FC = () => (
   <LoadingScreen message="טוען עמוד..." subtext="טוען נתונים למערכת Scoutify..." />
 );
 
-// Layout wrapper for authenticated pages
+/**
+ * Wraps authenticated pages in a standardized dashboard layout.
+ *
+ * Provides the global navigation bar, sidebar, and main content area container.
+ * Enforces consistent styling, responsiveness, and dark mode support across secure routes.
+ *
+ * @param {Object} props Component properties.
+ * @param {React.ReactNode} props.children The inner page content to render.
+ * @returns {React.ReactElement} The structured layout component.
+ */
 const AuthenticatedLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-dark-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
@@ -46,6 +69,15 @@ const AuthenticatedLayout: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
+/**
+ * The root React application component.
+ *
+ * Bootstraps the application state context providers (Error Boundary, Redux,
+ * Theme, Auth, Loading) and configures the React Router structure. It defines
+ * public authentication pages and secure, protected routes wrapped in the authenticated layout.
+ *
+ * @returns {React.ReactElement} The completely configured application tree.
+ */
 export const App: React.FC = () => {
   return (
     <ErrorBoundary>
@@ -140,7 +172,7 @@ export const App: React.FC = () => {
                     </ProtectedRoute>
                   }
                 />
-                // Dynamic Profile Route for viewing other users' profiles
+                {/* Dynamic Profile Route for viewing other users' profiles */}
                 <Route
                   path="/profile/:userId"
                   element={
