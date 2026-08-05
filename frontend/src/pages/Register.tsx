@@ -159,6 +159,7 @@ export const Register: React.FC = () => {
                   id="password"
                   name="password"
                   type="password"
+                  autoComplete='password'
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
