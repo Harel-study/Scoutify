@@ -11,7 +11,7 @@ import type { AppDispatch } from '../store';
 import { toggleLike, deletePost, addComment, type IPost } from '../store/slices/feedSlice';
 import { useAuth } from '../context/AuthContext';
 import { Heart, Trash2, MapPin, Tag, MessageCircle, Send } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 interface FeedCardProps {
   /** @type {IPost} The post data to render, containing content, media, and author details. */
   post: IPost;

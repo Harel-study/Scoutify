@@ -4,7 +4,7 @@
  * Renders the 404 error page for unmatched routes.
  */
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import './NotFound.css';
 
 /**

@@ -5,7 +5,7 @@
  * Allows users who have received a reset token via email to set a new password.
  */
 import React, { useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router';
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, ShieldCheck } from 'lucide-react';
 import { resetPassword } from '../services/authService';
 

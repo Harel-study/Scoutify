@@ -5,7 +5,7 @@
  * Displays routing links and a brief summary of the current user's profile.
  */
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { Rss, Briefcase, Search, MessageSquare, User as UserIcon } from 'lucide-react';
 

@@ -6,7 +6,7 @@
  */
 
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { AuthProvider } from './context/AuthContext';

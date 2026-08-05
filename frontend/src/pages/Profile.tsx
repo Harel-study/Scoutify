@@ -21,7 +21,7 @@ import {
   Trash2,
   FileText,
 } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
 /**
  * Renders the profile view and editing interface.

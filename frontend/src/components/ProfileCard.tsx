@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import { MapPin, Briefcase, Footprints, MessageSquare } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 interface ProfileCardProps {
   /** @type {any} The profile object containing type-specific details (player, staff, or team). */

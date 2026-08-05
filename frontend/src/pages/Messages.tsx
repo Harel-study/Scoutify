@@ -15,7 +15,7 @@ import {
   setActivePartner,
 } from '../store/slices/chatSlice';
 import { useAuth } from '../context/AuthContext';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router';
 import { SidebarSkeleton } from '../components/SkeletonLoader';
 import { Send, MessageSquare } from 'lucide-react';
 

@@ -6,7 +6,7 @@
  */
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import { User, Lock, LogIn, AlertCircle } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 /**

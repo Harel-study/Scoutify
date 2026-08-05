@@ -4,7 +4,7 @@
  * Renders the forgot password page where users can request a password reset link.
  */
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Mail, ArrowRight, CheckCircle2, AlertCircle, KeyRound } from 'lucide-react';
 import { forgotPassword } from '../services/authService';
 
