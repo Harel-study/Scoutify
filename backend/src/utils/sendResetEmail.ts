@@ -134,7 +134,7 @@ export const sendResetEmail = async (toEmail: string, rawToken: string): Promise
     const info = await transporter.sendMail(mailOptions);
     logger.info(`Password reset email sent to ${toEmail}`);
     // If using dev stream transporter, log the reset URL directly for local development testing
-    if ((info as any).message) {
+    if ((info as any).message && process.env.NODE_ENV === 'development') {
       logger.info(`[DEV EMAIL SIMULATION] Reset Link: ${resetUrl}`);
       console.log(`\n==================================================`);
       console.log(`[DEV EMAIL SIMULATION] Password Reset Email Sent!`);
@@ -145,6 +145,8 @@ export const sendResetEmail = async (toEmail: string, rawToken: string): Promise
   } catch (err: any) {
     logger.error(`Error sending password reset email to ${toEmail}: ${err.message}`);
     // Print reset link to console in dev mode so testing never fails due to missing SMTP
-    console.log(`\n[FALLBACK RESET LINK]: ${resetUrl}\n`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`\n[FALLBACK RESET LINK]: ${resetUrl}\n`);
+    }
   }
 };

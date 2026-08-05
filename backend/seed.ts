@@ -18,7 +18,7 @@ const MOCK_PASSWORD = 'password123'; // Plain text, will be hashed by Mongoose s
 const seed = async () => {
   try {
     const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/scoutify';
-    logger.info(`Connecting to database: ${mongoURI}`);
+    logger.info('Connecting to database...');
     await mongoose.connect(mongoURI);
 
     logger.info('Clearing database collections...');
