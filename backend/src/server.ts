@@ -32,6 +32,10 @@ if (missingEnvVars.length > 0) {
 connectDB();
 
 const app = express();
+// Trust the first proxy in front of the server (e.g., render)
+// This is critical so express-rate-limit uses the real user's IP instead of the proxy's IP
+app.set("trust proxy", 1);
+
 const PORT = process.env.PORT || 5000;
 
 // Security Middleware

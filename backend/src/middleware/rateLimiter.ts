@@ -2,7 +2,7 @@ import rateLimit from 'express-rate-limit';
 
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5000, // Increased limit for local development
+  max: 150,
   standardHeaders: true, 
   legacyHeaders: false, 
   message: {
@@ -13,7 +13,7 @@ export const apiLimiter = rateLimit({
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5000, // Increased limit for local development
+  max: 15,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
