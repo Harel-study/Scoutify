@@ -32,7 +32,7 @@ import logger from '../config/logger.js';
 const generateAccessToken = (user: { _id: any; username: string; email?: string; role: string }) => {
   return jwt.sign(
     { id: user._id.toString(), username: user.username, email: user.email, role: user.role },
-    process.env.ACCESS_TOKEN_SECRET || 'fallback_access_secret',
+    process.env.ACCESS_TOKEN_SECRET as string,
     { expiresIn: '15m' }
   );
 };
@@ -46,7 +46,7 @@ const generateAccessToken = (user: { _id: any; username: string; email?: string;
 const generateRefreshToken = (user: { _id: any }) => {
   return jwt.sign(
     { id: user._id.toString() },
-    process.env.REFRESH_TOKEN_SECRET || 'fallback_refresh_secret',
+    process.env.REFRESH_TOKEN_SECRET as string,
     { expiresIn: '7d' }
   );
 };
@@ -377,7 +377,7 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
     // Verify the token content
     let decoded: any;
     try {
-      decoded = jwt.verify(oldToken, process.env.REFRESH_TOKEN_SECRET || 'fallback_refresh_secret');
+      decoded = jwt.verify(oldToken, process.env.REFRESH_TOKEN_SECRET as string);
     } catch (err) {
       // If token is invalid or expired, clean up database record if it exists
       if (tokenRecord) {

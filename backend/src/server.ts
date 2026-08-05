@@ -19,6 +19,15 @@ import { errorHandler } from './middleware/error.js';
 
 
 
+// Validate Environment Variables
+const requiredEnvVars = ['MONGODB_URI', 'ACCESS_TOKEN_SECRET', 'REFRESH_TOKEN_SECRET', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_API_KEY', 'CLOUDINARY_API_SECRET', 'GEMINI_API_KEY'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  logger.error(`FATAL ERROR: Missing required environment variables: ${missingEnvVars.join(', ')}`);
+  process.exit(1);
+}
+
 // Connect to Database
 connectDB();
 

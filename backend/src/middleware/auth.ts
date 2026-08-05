@@ -53,8 +53,7 @@ export const authenticateJWT = (req: AuthenticatedRequest, res: Response, next: 
 
   const token = authHeader.split(' ')[1];
   try {
-    // Verify token signature and decode user claims
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'fallback_access_secret') as IUserPayload;
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as IUserPayload;
     req.user = decoded;
     next();
   } catch (error: any) {
