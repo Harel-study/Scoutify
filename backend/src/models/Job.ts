@@ -50,6 +50,10 @@ const jobSchema = new Schema<IJob>({
     timestamps: true
 });
 
-const Job = mongoose.model<IJob>('Job', jobSchema);
+// Indexes for high-performance querying and filtering
+jobSchema.index({ status: 1, createdAt: -1 });
+jobSchema.index({ profileId: 1, createdAt: -1 });
+jobSchema.index({ city: 1, jobType: 1, status: 1 });
 
+const Job = mongoose.model<IJob>('Job', jobSchema);
 export default Job;
