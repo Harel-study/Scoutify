@@ -1,105 +1,109 @@
-/**
- * @module Login
- *
- * Renders the user login page.
- * Provides forms for username/password authentication as well as a mock Google SSO login.
- */
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router';
 import { User, Lock, LogIn, AlertCircle } from 'lucide-react';
-import { FcGoogle } from 'react-icons/fc';
-/**
- * Renders the login page.
- *
- * Handles user authentication via standard credentials or simulated Google SSO.
- * On successful login, redirects the user to the home page.
- *
- * @returns {React.ReactElement} The Login component.
- */
+import {
+  GoogleLogin,
+  type CredentialResponse,
+} from '@react-oauth/google';
+
 export const Login: React.FC = () => {
   const { login, googleLogin } = useAuth();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showGoogleMock, setShowGoogleMock] = useState(false);
+
   const navigate = useNavigate();
 
-  /**
-   * Submits the login form using username and password.
-   *
-   * Calls the authentication context login method. If successful, redirects to the home page.
-   * If it fails, displays an error message.
-   *
-   * @param {React.FormEvent} e  The form submission event.
-   * @returns {Promise<void>} Resolves when the authentication process completes.
-   */
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     e.preventDefault();
     setError('');
     setLoading(true);
+
     try {
       await login(username, password);
       navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign in');
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Failed to sign in';
+
+      setError(message);
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Simulates a Google SSO login process.
-   *
-   * Attempts to log in with a generated mock token. If the mock account doesn't exist,
-   * prompts the user to select a role to complete registration.
-   *
-   * @param {string} mockUsername  The simulated username for the Google account.
-   * @param {"player" | "team" | "staff"} [role]  The optional role to assign if registering.
-   * @returns {Promise<void>} Resolves when the mock authentication completes.
-   */
-  const handleMockGoogleLogin = async (mockUsername: string, role?: 'player' | 'team' | 'staff') => {
+  const handleGoogleSuccess = async (
+    credentialResponse: CredentialResponse
+  ): Promise<void> => {
     setError('');
+
+    const credential = credentialResponse.credential;
+
+    if (!credential) {
+      setError('Google did not return a valid credential');
+      return;
+    }
+
     setLoading(true);
+
     try {
-      const mockToken = `mock_${mockUsername}`;
-      const result = await googleLogin(mockToken, role);
-      
+      const result = await googleLogin(credential);
+
       if (result.needsRoleSelection) {
-        // If registering a new user via Google, prompt for role selection
-        const selectedRole = prompt('Please enter role to register ("player", "team", "staff"):') as any;
-        if (selectedRole && ['player', 'team', 'staff'].includes(selectedRole)) {
-          await googleLogin(mockToken, selectedRole);
-          navigate('/');
-        } else {
-          setError('Google registration cancelled: role is required');
+        const selectedRole = prompt(
+          'Please enter role to register ("player", "team", "staff"):'
+        );
+
+        if (
+          selectedRole !== 'player' &&
+          selectedRole !== 'team' &&
+          selectedRole !== 'staff'
+        ) {
+          setError(
+            'Google registration cancelled: a valid role is required'
+          );
+          return;
         }
-      } else {
-        navigate('/');
+
+        await googleLogin(credential, selectedRole);
       }
-    } catch (err: any) {
-      setError(err.message || 'Mock Google login failed');
+
+      navigate('/');
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Google login failed';
+
+      setError(message);
     } finally {
       setLoading(false);
-      setShowGoogleMock(false);
     }
+  };
+
+  const handleGoogleError = (): void => {
+    setError('Google sign in failed');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-dark-950 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden transition-colors duration-200">
-      {/* Background glow effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl" />
+
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
 
       <div className="max-w-md w-full space-y-8 bg-white dark:bg-dark-900 border border-dark-150 dark:border-dark-800 p-8 rounded-3xl shadow-2xl relative z-10">
         <div className="text-center">
           <span className="w-12 h-12 bg-brand-500 rounded-2xl flex items-center justify-center text-white font-extrabold text-2xl tracking-wider mx-auto shadow-lg shadow-brand-500/20">
             S
           </span>
+
           <h2 className="mt-6 text-3xl font-extrabold text-dark-900 dark:text-white tracking-tight">
             Welcome back
           </h2>
+
           <p className="mt-2 text-sm text-dark-500 dark:text-dark-400">
             Connect directly with scouts, teams, and talent.
           </p>
@@ -112,16 +116,24 @@ export const Login: React.FC = () => {
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form
+          className="mt-8 space-y-6"
+          onSubmit={handleSubmit}
+        >
           <div className="space-y-4">
             <div>
-              <label htmlFor="username" className="text-xs font-bold text-dark-600 dark:text-dark-300 uppercase tracking-wider block mb-2">
+              <label
+                htmlFor="username"
+                className="text-xs font-bold text-dark-600 dark:text-dark-300 uppercase tracking-wider block mb-2"
+              >
                 Username
               </label>
+
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark-500">
                   <User className="w-5 h-5" />
                 </div>
+
                 <input
                   id="username"
                   name="username"
@@ -138,17 +150,26 @@ export const Login: React.FC = () => {
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label htmlFor="password" className="text-xs font-bold text-dark-600 dark:text-dark-300 uppercase tracking-wider block">
+                <label
+                  htmlFor="password"
+                  className="text-xs font-bold text-dark-600 dark:text-dark-300 uppercase tracking-wider block"
+                >
                   Password
                 </label>
-                <Link to="/forgot-password" className="text-xs text-brand-500 hover:underline font-semibold">
+
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-brand-500 hover:underline font-semibold"
+                >
                   Forgot password?
                 </Link>
               </div>
+
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-dark-500">
                   <Lock className="w-5 h-5" />
                 </div>
+
                 <input
                   id="password"
                   name="password"
@@ -164,71 +185,47 @@ export const Login: React.FC = () => {
             </div>
           </div>
 
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-brand-500 hover:bg-brand-600 active:scale-98 text-white font-semibold py-3 px-4 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-brand-500/20"
-            >
-              <LogIn className="w-5 h-5" />
-              <span>{loading ? 'Signing in...' : 'Sign in'}</span>
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-brand-500 hover:bg-brand-600 active:scale-98 text-white font-semibold py-3 px-4 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 shadow-lg shadow-brand-500/20 disabled:opacity-60"
+          >
+            <LogIn className="w-5 h-5" />
+
+            <span>
+              {loading ? 'Signing in...' : 'Sign in'}
+            </span>
+          </button>
         </form>
 
         <div className="mt-6 flex flex-col space-y-4">
           <div className="relative flex py-2 items-center">
-            <div className="flex-grow border-t border-dark-150 dark:border-dark-800"></div>
-            <span className="flex-shrink mx-4 text-dark-500 text-xs font-semibold uppercase tracking-wider">Or continue with</span>
-            <div className="flex-grow border-t border-dark-150 dark:border-dark-800"></div>
+            <div className="flex-grow border-t border-dark-150 dark:border-dark-800" />
+
+            <span className="flex-shrink mx-4 text-dark-500 text-xs font-semibold uppercase tracking-wider">
+              Or continue with
+            </span>
+
+            <div className="flex-grow border-t border-dark-150 dark:border-dark-800" />
           </div>
 
-          {/* Simulated Google Button */}
-          {!showGoogleMock ? (
-            <button
-              onClick={() => setShowGoogleMock(true)}
-              className="w-full border border-dark-200 dark:border-dark-700 hover:bg-dark-50 dark:hover:bg-dark-800 text-dark-900 dark:text-white font-medium py-3 px-4 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 active:scale-98"
-            >
-              <FcGoogle className="w-5 h-5" />
-              <span>Sign in with Google</span>
-            </button>
-          ) : (
-            <div className="bg-dark-50 dark:bg-dark-800 p-4 border border-dark-150 dark:border-dark-700 rounded-2xl space-y-3 animate-slide-up">
-              <p className="text-xs font-bold text-dark-300 uppercase text-center mb-1">Simulate Google login as:</p>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  onClick={() => handleMockGoogleLogin('striker', 'player')}
-                  className="bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 hover:border-brand-500 text-[11px] text-dark-900 dark:text-white py-2 rounded-xl transition duration-150 font-semibold"
-                >
-                  Striker (Player)
-                </button>
-                <button
-                  onClick={() => handleMockGoogleLogin('united', 'team')}
-                  className="bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 hover:border-brand-500 text-[11px] text-dark-900 dark:text-white py-2 rounded-xl transition duration-150 font-semibold"
-                >
-                  Man United (Team)
-                </button>
-                <button
-                  onClick={() => handleMockGoogleLogin('coach', 'staff')}
-                  className="bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 hover:border-brand-500 text-[11px] text-dark-900 dark:text-white py-2 rounded-xl transition duration-150 font-semibold"
-                >
-                  Coach (Staff)
-                </button>
-              </div>
-              <button
-                onClick={() => setShowGoogleMock(false)}
-                className="w-full text-center text-xs text-dark-400 hover:underline pt-1 block"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              useOneTap={false}
+            />
+          </div>
         </div>
 
         <div className="text-center mt-6">
           <p className="text-sm text-dark-400">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-brand-500 hover:underline font-semibold">
+            Don&apos;t have an account?{' '}
+
+            <Link
+              to="/register"
+              className="text-brand-500 hover:underline font-semibold"
+            >
               Create an account
             </Link>
           </p>
@@ -237,4 +234,5 @@ export const Login: React.FC = () => {
     </div>
   );
 };
+
 export default Login;
