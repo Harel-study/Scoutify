@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router';
 import { User, Lock, LogIn, AlertCircle } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
+import { GoogleLogin } from '@react-oauth/google';
 /**
  * Renders the login page.
  *
@@ -83,6 +84,34 @@ export const Login: React.FC = () => {
     } finally {
       setLoading(false);
       setShowGoogleMock(false);
+    }
+  };
+
+  /**
+   * Handles successful real Google SSO login response.
+   */
+  const handleRealGoogleLoginSuccess = async (credentialResponse: any) => {
+    if (!credentialResponse.credential) return;
+    setError('');
+    setLoading(true);
+    try {
+      const result = await googleLogin(credentialResponse.credential);
+      
+      if (result.needsRoleSelection) {
+        const selectedRole = prompt('Please enter role to register ("player", "team", "staff"):') as any;
+        if (selectedRole && ['player', 'team', 'staff'].includes(selectedRole)) {
+          await googleLogin(credentialResponse.credential, selectedRole);
+          navigate('/');
+        } else {
+          setError('Google registration cancelled: role is required');
+        }
+      } else {
+        navigate('/');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Google login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -183,45 +212,62 @@ export const Login: React.FC = () => {
             <div className="flex-grow border-t border-dark-150 dark:border-dark-800"></div>
           </div>
 
-          {/* Simulated Google Button */}
-          {!showGoogleMock ? (
-            <button
-              onClick={() => setShowGoogleMock(true)}
-              className="w-full border border-dark-200 dark:border-dark-700 hover:bg-dark-50 dark:hover:bg-dark-800 text-dark-900 dark:text-white font-medium py-3 px-4 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 active:scale-98"
-            >
-              <FcGoogle className="w-5 h-5" />
-              <span>Sign in with Google</span>
-            </button>
-          ) : (
-            <div className="bg-dark-50 dark:bg-dark-800 p-4 border border-dark-150 dark:border-dark-700 rounded-2xl space-y-3 animate-slide-up">
-              <p className="text-xs font-bold text-dark-300 uppercase text-center mb-1">Simulate Google login as:</p>
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  onClick={() => handleMockGoogleLogin('striker', 'player')}
-                  className="bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 hover:border-brand-500 text-[11px] text-dark-900 dark:text-white py-2 rounded-xl transition duration-150 font-semibold"
-                >
-                  Striker (Player)
-                </button>
-                <button
-                  onClick={() => handleMockGoogleLogin('united', 'team')}
-                  className="bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 hover:border-brand-500 text-[11px] text-dark-900 dark:text-white py-2 rounded-xl transition duration-150 font-semibold"
-                >
-                  Man United (Team)
-                </button>
-                <button
-                  onClick={() => handleMockGoogleLogin('coach', 'staff')}
-                  className="bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 hover:border-brand-500 text-[11px] text-dark-900 dark:text-white py-2 rounded-xl transition duration-150 font-semibold"
-                >
-                  Coach (Staff)
-                </button>
-              </div>
-              <button
-                onClick={() => setShowGoogleMock(false)}
-                className="w-full text-center text-xs text-dark-400 hover:underline pt-1 block"
-              >
-                Cancel
-              </button>
+          {/* Google Button */}
+          {!import.meta.env.DEV ? (
+            <div className="w-full flex justify-center">
+              <GoogleLogin
+                onSuccess={handleRealGoogleLoginSuccess}
+                onError={() => setError('Google login failed')}
+                useOneTap
+              />
             </div>
+          ) : (
+            <>
+              {!showGoogleMock ? (
+                <button
+                  type="button"
+                  onClick={() => setShowGoogleMock(true)}
+                  className="w-full border border-dark-200 dark:border-dark-700 hover:bg-dark-50 dark:hover:bg-dark-800 text-dark-900 dark:text-white font-medium py-3 px-4 rounded-2xl transition duration-200 flex items-center justify-center space-x-2 active:scale-98"
+                >
+                  <FcGoogle className="w-5 h-5" />
+                  <span>Simulate Google Sign In (Dev)</span>
+                </button>
+              ) : (
+                <div className="bg-dark-50 dark:bg-dark-800 p-4 border border-dark-150 dark:border-dark-700 rounded-2xl space-y-3 animate-slide-up">
+                  <p className="text-xs font-bold text-dark-300 uppercase text-center mb-1">Simulate Google login as:</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleMockGoogleLogin('striker', 'player')}
+                      className="bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 hover:border-brand-500 text-[11px] text-dark-900 dark:text-white py-2 rounded-xl transition duration-150 font-semibold"
+                    >
+                      Striker (Player)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMockGoogleLogin('united', 'team')}
+                      className="bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 hover:border-brand-500 text-[11px] text-dark-900 dark:text-white py-2 rounded-xl transition duration-150 font-semibold"
+                    >
+                      Man United (Team)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMockGoogleLogin('coach', 'staff')}
+                      className="bg-white dark:bg-dark-900 border border-dark-200 dark:border-dark-700 hover:border-brand-500 text-[11px] text-dark-900 dark:text-white py-2 rounded-xl transition duration-150 font-semibold"
+                    >
+                      Coach (Staff)
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowGoogleMock(false)}
+                    className="w-full text-center text-xs text-dark-400 hover:underline pt-1 block"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
 
