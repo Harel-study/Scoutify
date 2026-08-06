@@ -12,6 +12,7 @@ import { store } from './store';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { LoadingProvider } from './context/LoadingContext';
+import { SocketProvider } from './context/SocketContext';
 import LoadingScreen from './components/LoadingScreen';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -84,8 +85,9 @@ export const App: React.FC = () => {
       <Provider store={store}>
         <ThemeProvider>
           <AuthProvider>
-            <LoadingProvider>
-              <BrowserRouter>
+            <SocketProvider>
+              <LoadingProvider>
+                <BrowserRouter>
               <Routes>
                 {/* Public Authentication Pages */}
                 <Route
@@ -193,8 +195,9 @@ export const App: React.FC = () => {
                   }
                 />
               </Routes>
-            </BrowserRouter>
-          </LoadingProvider>
+              </BrowserRouter>
+            </LoadingProvider>
+          </SocketProvider>
         </AuthProvider>
       </ThemeProvider>
     </Provider>
