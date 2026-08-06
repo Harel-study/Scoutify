@@ -11,6 +11,7 @@ import Team from '../models/Team.js';
 import Notification from '../models/Notification.js';
 import { uploadToCloudinary } from '../config/cloudinary.js';
 import { postSchema, commentSchema } from '../validation/joiSchemas.js';
+import socketService from '../services/socketService.js';
 
 /**
  * Creates a new social feed post.
@@ -216,6 +217,7 @@ export const toggleLikePost = async (req: AuthenticatedRequest, res: Response, n
           sourceLink: `/feed`
         });
         await notification.save();
+        socketService.emitToUser(receiverId, 'newNotification', notification);
       }
     }
 
@@ -277,6 +279,7 @@ export const addComment = async (req: AuthenticatedRequest, res: Response, next:
         sourceLink: `/feed`
       });
       await notification.save();
+      socketService.emitToUser(receiverId, 'newNotification', notification);
     }
 
     res.status(201).json({ message: 'Comment added successfully', post });

@@ -13,6 +13,7 @@ import StaffProfile from '../models/StaffProfile.js';
 import PersonalChat from '../models/PersonalChat.js';
 import Notification from '../models/Notification.js';
 import { jobSchema } from '../validation/joiSchemas.js';
+import socketService from '../services/socketService.js';
 
 /**
  * Creates a new job posting for a team or staff member.
@@ -262,6 +263,7 @@ export const applyToJob = async (req: AuthenticatedRequest, res: Response, next:
     });
 
     await notification.save();
+    socketService.emitToUser(receiverId, 'newNotification', notification);
 
     // Fetch the applicant's profile to get their CV if it exists
     let cvLink = '';

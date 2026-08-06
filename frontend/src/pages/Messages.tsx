@@ -18,6 +18,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSearchParams } from 'react-router';
 import { SidebarSkeleton } from '../components/SkeletonLoader';
 import { Send, MessageSquare } from 'lucide-react';
+import { useSocket } from '../context/SocketContext';
 
 /**
  * Renders the messages page layout including the sidebar for conversations
@@ -33,6 +34,7 @@ export const Messages: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [searchParams, setSearchParams] = useSearchParams();
   const targetUserParam = searchParams.get('user');
+  const { socket } = useSocket();
 
   /**
    * Parses message text to convert URLs into clickable anchor elements.
@@ -75,16 +77,26 @@ export const Messages: React.FC = () => {
     }
   }, [targetUserParam, dispatch]);
 
-  // Message polling to simulate real-time chat without websockets
+  // Listen for real-time messages via WebSocket
   useEffect(() => {
-    if (!activePartnerId) return;
+    if (!socket) return;
 
-    const interval = setInterval(() => {
-      dispatch(fetchMessageHistory(activePartnerId));
-    }, 4000); // Poll every 4 seconds
+    const handleNewMessage = (msg: any) => {
+      // Update conversations list to reflect the new message
+      dispatch(fetchConversations());
+      
+      // If the message belongs to the currently active chat, append it or refetch
+      if (activePartnerId && (msg.sender === activePartnerId || msg.receiver === activePartnerId)) {
+        dispatch(fetchMessageHistory(activePartnerId));
+      }
+    };
 
-    return () => clearInterval(interval);
-  }, [activePartnerId, dispatch]);
+    socket.on('newMessage', handleNewMessage);
+
+    return () => {
+      socket.off('newMessage', handleNewMessage);
+    };
+  }, [socket, activePartnerId, dispatch]);
 
   // Auto-scroll to bottom of messages
   useEffect(() => {

@@ -11,6 +11,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Sun, Moon, Bell, LogOut, Check, Menu, X } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router';
 import api from '../utils/axios';
+import { useSocket } from '../context/SocketContext';
 
 /**
  * Renders the top navigation bar of the application.
@@ -28,6 +29,7 @@ export const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { socket } = useSocket();
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
@@ -41,10 +43,20 @@ export const Navbar: React.FC = () => {
 
   useEffect(() => {
     fetchNotifications();
-    // Poll notifications every 15 seconds to simulate real-time updates
-    const interval = setInterval(fetchNotifications, 15000);
-    return () => clearInterval(interval);
-  }, [fetchNotifications]);
+    
+    if (socket) {
+      const handleNewNotification = (notif: any) => {
+        // Prepend new notification to state
+        setNotifications((prev) => [notif, ...prev]);
+      };
+      
+      socket.on('newNotification', handleNewNotification);
+      
+      return () => {
+        socket.off('newNotification', handleNewNotification);
+      };
+    }
+  }, [fetchNotifications, socket]);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 

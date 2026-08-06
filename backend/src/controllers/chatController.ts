@@ -14,6 +14,7 @@ import Team from '../models/Team.js';
 import StaffProfile from '../models/StaffProfile.js';
 import Notification from '../models/Notification.js';
 import { chatSchema } from '../validation/joiSchemas.js';
+import socketService from '../services/socketService.js';
 
 /**
  * Dispatches a direct message to another user.
@@ -60,6 +61,10 @@ export const sendMessage = async (req: AuthenticatedRequest, res: Response, next
       sourceLink: '/messages'
     });
     await notification.save();
+
+    // Emit real-time events via WebSockets
+    socketService.emitToUser(receiverId, 'newMessage', chat);
+    socketService.emitToUser(receiverId, 'newNotification', notification);
 
     res.status(201).json({ message: 'Message sent successfully', chat });
   } catch (err) {

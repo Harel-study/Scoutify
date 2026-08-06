@@ -16,6 +16,8 @@ import { connectDB } from './config/db.js';
 import logger from './config/logger.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
 import { errorHandler } from './middleware/error.js';
+import { createServer } from 'http';
+import socketService from './services/socketService.js';
 
 
 
@@ -46,7 +48,7 @@ app.use(helmet({
 // CORS Configuration
 const allowedOrigins = [
   process.env.CLIENT_URL || 'http://localhost:5173',
-  'https://scoutify-frontend.vercel.app' // Example placeholder for Vercel deployment
+  'https://scoutify-6dot.onrender.com'
 ];
 
 app.use(cors({
@@ -91,6 +93,9 @@ app.use(errorHandler);
 
 
 // Start Server
-app.listen(PORT, () => {
+const server = createServer(app);
+socketService.init(server);
+
+server.listen(PORT, () => {
   logger.info(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
