@@ -8,7 +8,7 @@ import logger from '../config/logger.js';
  * @param {string} rawToken - The raw unhashed token to include in the reset URL
  */
 export const sendResetEmail = async (toEmail: string, rawToken: string): Promise<void> => {
-  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+  const clientUrl = process.env.CLIENT_URL || 'http://localhost:5000';
   const resetUrl = `${clientUrl}/reset-password/${rawToken}`;
   const fromEmail = process.env.EMAIL_FROM || 'Scoutify Support <noreply@scoutify.com>';
 

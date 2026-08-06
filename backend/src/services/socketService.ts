@@ -17,7 +17,7 @@ class SocketService {
     this.io = new SocketIOServer(server, {
       cors: {
         origin: [
-          process.env.CLIENT_URL || 'http://localhost:5173',
+          process.env.CLIENT_URL || 'http://localhost:5000',
           'https://scoutify-6dot.onrender.com'
         ],
         methods: ['GET', 'POST'],
