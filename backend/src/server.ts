@@ -45,7 +45,7 @@ app.use(helmet({
 
 // CORS Configuration
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
+  process.env.CLIENT_URL || 'http://localhost:5000', // Example placeholder for local development
   'https://scoutify-frontend.vercel.app' // Example placeholder for Vercel deployment
 ];
 

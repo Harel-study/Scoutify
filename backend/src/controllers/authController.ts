@@ -80,8 +80,9 @@ const getRefreshTokenFromCookie = (req: Request): string | undefined => {
  */
 const setRefreshTokenCookie = (res: Response, token: string) => {
   const isProduction = process.env.NODE_ENV === 'production';
-  // set cookie options
-  let cookieString = `refreshToken=${encodeURIComponent(token)}; HttpOnly; Max-Age=${7 * 24 * 60 * 60}; Path=/; SameSite=Lax`;
+// set cookie options
+  const sameSiteSetting = isProduction ? 'None' : 'Lax';
+  let cookieString = `refreshToken=${encodeURIComponent(token)}; HttpOnly; Max-Age=${7 * 24 * 60 * 60}; Path=/; SameSite=${sameSiteSetting}`;
   if (isProduction) {
     cookieString += '; Secure';
   }
