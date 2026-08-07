@@ -95,18 +95,21 @@ export const listJobs = async (req: AuthenticatedRequest, res: Response, next: N
     const jobs = await Job.find(query)
       .populate({ path: 'profileId', populate: { path: 'userID', select: 'username email role', strictPopulate: false } })
       .sort({ createdAt: -1 });
-
-    const userId = req.user?.id;
-    const jobsWithApplicationsStatus = jobs.map(job => {
-      const jobobject = job.toObject();
-      return {
-        ...jobobject,
-        hasapplied:userId?
-        job.applications.some(applicantId => applicantId.toString() === userId) : false
-      };
-    });
-
-    res.status(200).json({ results: jobsWithApplicationsStatus });
+const userId = req.user?.id;
+const jobsWithApplicationStatus = jobs.map((job) => {
+  const jobObject = job.toObject();
+  return {
+    ...jobObject,
+    hasApplied: userId
+      ? (job.applications ?? []).some(
+          (applicantId) => applicantId.toString() === userId
+        )
+      : false,
+  };
+});
+res.status(200).json({
+  jobs: jobsWithApplicationStatus
+});
   } catch (err) {
     next(err);
   }
@@ -262,15 +265,19 @@ export const applyToJob = async (req: AuthenticatedRequest, res: Response, next:
     if (receiverId === id) {
       return res.status(400).json({ message: 'You cannot apply to your own job listing' });
     }
-    const alreadyApplied = job.applications.some(
-      (applicantId) => applicantId.toString() === id
-    );
-    if (alreadyApplied) {
-      return res.status(400).json({ message: 'You have already applied to this job listing' });
-    }
-    job.applications.push(id as any);
-    await job.save();
-
+  const alreadyApplied = (job.applications ?? []).some(
+    (applicantId) => applicantId.toString() === id
+  );
+  if (alreadyApplied) {
+    return res.status(400).json({
+      message: 'You have already applied to this job listing'
+  });
+}
+  if (!job.applications) {
+    job.applications = [];
+  }
+  job.applications.push(id as any);
+  await job.save();
     // Create Notification
     const notification = new Notification({
       sender: id,
