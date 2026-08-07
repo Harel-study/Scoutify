@@ -41,7 +41,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
  * @returns {React.ReactElement} The loading screen UI.
  */
 const PageLoader: React.FC = () => (
-  <LoadingScreen message="טוען עמוד..." subtext="טוען נתונים למערכת Scoutify..." />
+  <LoadingScreen message="Loading page..." subtext="Fetching data for Scoutify..." />
 );
 
 /**

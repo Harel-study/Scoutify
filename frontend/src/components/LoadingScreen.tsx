@@ -46,8 +46,8 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   isVisible = true,
   delay = 100,
   minDuration = 900,
-  message = 'טוען נתונים...',
-  subtext = 'אנא המתן רגע, המערכת מכינה את התוכן',
+  message = 'Loading data...',
+  subtext = 'Please wait a moment while the content is prepared',
   theme = 'dark',
   className = '',
 }) => {
@@ -66,7 +66,7 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
       <div className="loading-content">
         {/* Pitch & Soccer Ball Container */}
         <div className="pitch-ball-container">
-          {/* Mini Green Soccer Pitch Surface (מגרש כדורגל) */}
+          {/* Mini Green Soccer Pitch Surface */}
           <div className="soccer-pitch-surface">
             <div className="pitch-center-line" />
             <div className="pitch-center-circle" />

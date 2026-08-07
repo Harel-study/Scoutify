@@ -43,7 +43,7 @@ const personalChatSchema = new Schema<IPersonalChat>({
         trim: true 
     }
 }, {
-    // מייצר אוטומטית את השדות createdAt ו-updatedAt כפי שנדרש בטבלה
+    // Automatically manages createdAt and updatedAt fields
     timestamps: true 
 });
 

@@ -14,11 +14,11 @@ export const sendResetEmail = async (toEmail: string, rawToken: string): Promise
 
   const htmlContent = `
     <!DOCTYPE html>
-    <html lang="he" dir="rtl">
+    <html lang="en" dir="ltr">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>איפוס סיסמה ב-Scoutify</title>
+      <title>Reset Your Scoutify Password</title>
       <style>
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -26,7 +26,7 @@ export const sendResetEmail = async (toEmail: string, rawToken: string): Promise
           color: #f8fafc;
           margin: 0;
           padding: 40px 20px;
-          direction: rtl;
+          direction: ltr;
         }
         .container {
           max-width: 560px;
@@ -102,21 +102,21 @@ export const sendResetEmail = async (toEmail: string, rawToken: string): Promise
         <div class="logo">
           <div class="logo-badge">S</div>
         </div>
-        <h1>בקשה לאיפוס סיסמה</h1>
+        <h1>Password Reset Request</h1>
         <p>
-          קיבלנו בקשה לאיפוס הסיסמה לחשבון ה-Scoutify שלך. 
-          כדי לבחור סיסמה חדשה, לחץ על הכפתור למטה:
+          We received a request to reset the password for your Scoutify account.
+          To set a new password, click the button below:
         </p>
         <div class="button-wrapper">
-          <a href="${resetUrl}" class="btn" target="_blank">איפוס סיסמה</a>
+          <a href="${resetUrl}" class="btn" target="_blank">Reset Password</a>
         </div>
         <p style="font-size: 13px; color: #64748b;">
-          קישור זה תקף ל-<strong>10 דקות בלבד</strong>. אם לא ביקשת לאפס את הסיסמה, תוכל להתעלם מבקשה זו בבטחה.
+          This link is valid for <strong>10 minutes only</strong>. If you did not request a password reset, you can safely ignore this email.
         </p>
         <div class="footer">
-          <p>אם הכפתור אינו עובד, העתק והדבק את הקישור הבא בדפדפן:</p>
+          <p>If the button doesn't work, copy and paste the following link into your browser:</p>
           <p class="link-alt">${resetUrl}</p>
-          <p style="margin-top: 16px;">© Scoutify Sports Network. כל הזכויות שמורות.</p>
+          <p style="margin-top: 16px;">© Scoutify Sports Network. All rights reserved.</p>
         </div>
       </div>
     </body>
@@ -126,7 +126,7 @@ export const sendResetEmail = async (toEmail: string, rawToken: string): Promise
   const mailOptions = {
     from: fromEmail,
     to: toEmail,
-    subject: 'איפוס סיסמה לחשבון Scoutify',
+    subject: 'Reset your Scoutify password',
     html: htmlContent,
   };
 
