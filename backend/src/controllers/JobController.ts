@@ -96,7 +96,17 @@ export const listJobs = async (req: AuthenticatedRequest, res: Response, next: N
       .populate({ path: 'profileId', populate: { path: 'userID', select: 'username email role', strictPopulate: false } })
       .sort({ createdAt: -1 });
 
-    res.status(200).json({ jobs });
+    const userId = req.user?.id;
+    const jobsWithApplicationsStatus = jobs.map(job => {
+      const jobobject = job.toObject();
+      return {
+        ...jobobject,
+        hasapplied:userId?
+        job.applications.some(applicantId => applicantId.toString() === userId) : false
+      };
+    });
+
+    res.status(200).json({ results: jobsWithApplicationsStatus });
   } catch (err) {
     next(err);
   }
@@ -252,6 +262,14 @@ export const applyToJob = async (req: AuthenticatedRequest, res: Response, next:
     if (receiverId === id) {
       return res.status(400).json({ message: 'You cannot apply to your own job listing' });
     }
+    const alreadyApplied = job.applications.some(
+      (applicantId) => applicantId.toString() === id
+    );
+    if (alreadyApplied) {
+      return res.status(400).json({ message: 'You have already applied to this job listing' });
+    }
+    job.applications.push(id as any);
+    await job.save();
 
     // Create Notification
     const notification = new Notification({

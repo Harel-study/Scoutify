@@ -15,6 +15,7 @@ import api from '../../utils/axios';
  */
 export interface IJob {
   _id: string;
+  hasApplied?: boolean;
   profileId: {
     _id: string;
     name?: string;
@@ -234,15 +235,48 @@ const jobSlice = createSlice({
       }
     });
 
-    // Delete Job
-    builder.addCase(deleteJob.fulfilled, (state, action: PayloadAction<string>) => {
-      state.jobs = state.jobs.filter((j) => j._id !== action.payload);
-      if (state.currentJob && state.currentJob._id === action.payload) {
-        state.currentJob = null;
-      }
-    });
+// Delete Job
+builder.addCase(
+  deleteJob.fulfilled,
+  (state, action: PayloadAction<string>) => {
+    state.jobs = state.jobs.filter(
+      (job) => job._id !== action.payload
+    );
+
+    if (
+      state.currentJob &&
+      state.currentJob._id === action.payload
+    ) {
+      state.currentJob = null;
+    }
+  }
+);
+
+// Apply to Job
+  builder.addCase(
+    applyToJob.fulfilled,
+  (
+    state,
+    action: PayloadAction<{
+      jobId: string;
+      message: string;
+    }>
+  ) => {
+    const job = state.jobs.find(
+      (item) => item._id === action.payload.jobId
+    );
+    if (job) {
+      job.hasApplied = true;
+    }
+    if (
+      state.currentJob &&
+      state.currentJob._id === action.payload.jobId
+    ) {
+      state.currentJob.hasApplied = true;
+    }
+  }
+);
   },
 });
-
 export const { clearCurrentJob } = jobSlice.actions;
 export default jobSlice.reducer;

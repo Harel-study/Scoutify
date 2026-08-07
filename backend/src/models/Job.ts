@@ -26,6 +26,7 @@ export interface IJob extends Document {
   /** The status of the posting: true if open/active, false if closed/filled. */
   status: boolean;
   /** The date when the job record was created. */
+  applications: Types.ObjectId[]; // Array of application IDs referencing the applications submitted for this job
   createdAt: Date;
   /** The date when the job record was last updated. */
   updatedAt: Date;
@@ -46,6 +47,7 @@ const jobSchema = new Schema<IJob>({
       required: true 
     },
     status: { type: Boolean, default: true },
+    applications: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 }, {
     timestamps: true
 });

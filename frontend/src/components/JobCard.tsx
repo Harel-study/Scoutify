@@ -31,7 +31,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const [applied, setApplied] = useState(false);
+  const [applied, setApplied] = useState(job.hasApplied ?? false);
   const [applying, setApplying] = useState(false);
 
   let posterName = 'Unknown Poster';
