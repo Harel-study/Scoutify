@@ -93,6 +93,7 @@ const postSchema = new Schema<IPost>({
 // Indexes for feed queries and user post lookups
 postSchema.index({ createdAt: -1 });
 postSchema.index({ profileId: 1, createdAt: -1 });
+postSchema.index({ targetRole: 1, createdAt: -1 });
 
 /**
  * Represents the Mongoose model for interacting with the posts collection.

@@ -78,6 +78,10 @@ const teamSchema = new Schema<ITeam>({
     timestamps: true 
 });
 
+// Indexes for fast team profile lookup by manager userID and recruiting search
+teamSchema.index({ userID: 1 }, { unique: true });
+teamSchema.index({ recruiting: 1, city: 1 });
+
 /**
  * Represents the Mongoose model for interacting with the teams collection.
  *

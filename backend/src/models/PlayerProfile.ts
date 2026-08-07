@@ -120,6 +120,11 @@ const playerProfileSchema = new Schema<IPlayerProfile>(
     timestamps: true
   }
 );
+
+// Indexes for fast profile resolution by userID and scouting query filters
+playerProfileSchema.index({ userID: 1 }, { unique: true });
+playerProfileSchema.index({ position: 1, isLookingForJob: 1 });
+playerProfileSchema.index({ contractStatus: 1 });
 /**
  * Represents the Mongoose model for interacting with the player profiles collection.
  *

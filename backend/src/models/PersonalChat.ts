@@ -47,6 +47,12 @@ const personalChatSchema = new Schema<IPersonalChat>({
     timestamps: true 
 });
 
+// Compound indexes for rapid conversation lookup and user chat history aggregation
+personalChatSchema.index({ sender: 1, receiver: 1, createdAt: 1 });
+personalChatSchema.index({ receiver: 1, sender: 1, createdAt: 1 });
+personalChatSchema.index({ sender: 1, createdAt: -1 });
+personalChatSchema.index({ receiver: 1, createdAt: -1 });
+
 const PersonalChat = model<IPersonalChat>('PersonalChat', personalChatSchema);
 
 export default PersonalChat;

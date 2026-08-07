@@ -52,6 +52,10 @@ const staffProfileSchema = new Schema<IStaffProfile>({
   cvName: { type: String, default: '' }
 }, { timestamps: true });
 
+// Indexes for fast profile lookups by userID and job-seeking status
+staffProfileSchema.index({ userID: 1 }, { unique: true });
+staffProfileSchema.index({ isLookingForJob: 1 });
+
 /**
  * Represents the Mongoose model for interacting with the staff profiles collection.
  *
