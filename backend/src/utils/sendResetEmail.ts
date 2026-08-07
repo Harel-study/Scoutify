@@ -1,7 +1,9 @@
-import { Resend } from 'resend';
+import { BrevoClient } from '@getbrevo/brevo';
 import logger from '../config/logger.js';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const brevo = new BrevoClient({
+  apiKey: process.env.BREVO_API_KEY as string
+});
 
 /**
  * Sends a password reset email containing a secure single-use token link.
@@ -12,7 +14,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export const sendResetEmail = async (toEmail: string, rawToken: string): Promise<void> => {
   const clientUrl = process.env.CLIENT_URL || 'http://localhost:5000';
   const resetUrl = `${clientUrl}/reset-password/${rawToken}`;
-  const fromEmail = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+  const fromEmail = process.env.EMAIL_FROM || 'noreply@scoutify.com';
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -126,16 +128,12 @@ export const sendResetEmail = async (toEmail: string, rawToken: string): Promise
   `;
 
   try {
-    const { error } = await resend.emails.send({
-      from: fromEmail,
-      to: toEmail,
+    await brevo.transactionalEmails.sendTransacEmail({
       subject: 'Reset your Scoutify password',
-      html: htmlContent,
+      htmlContent: htmlContent,
+      sender: { email: fromEmail, name: 'Scoutify Support' },
+      to: [{ email: toEmail }]
     });
-
-    if (error) {
-      throw new Error(`Resend API Error: ${error.message}`);
-    }
 
     logger.info(`Password reset email sent to ${toEmail}`);
   } catch (err: any) {
