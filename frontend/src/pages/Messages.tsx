@@ -17,7 +17,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useSearchParams, useNavigate } from 'react-router';
 import { SidebarSkeleton } from '../components/SkeletonLoader';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, MessageSquare, ArrowLeft } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
 
 /**
@@ -115,6 +115,10 @@ export const Messages: React.FC = () => {
     dispatch(setActivePartner(partnerId));
     dispatch(fetchMessageHistory(partnerId));
   };
+  const handleBackToConversations = () => {
+    setSearchParams({});
+    dispatch(setActivePartner(null));
+  }
   const handleOpenProfile = (partnerId: string) => {
     if(!partnerId) return;
     navigate(`/profile/${partnerId}`);
@@ -148,14 +152,16 @@ export const Messages: React.FC = () => {
   const activePartnerName = activeConversation?.displayName || 'Chat Partner';
 
   return (
-    <div className="flex-1 flex h-[calc(100vh-4rem)] bg-dark-950/40 border border-dark-200 dark:border-dark-800 rounded-3xl overflow-hidden shadow-sm transition-colors duration-200">
-      
+    <div className="flex-1 flex h-[calc(100dvh-4rem)] md:h-[calc(100vh-4rem)] bg-dark-950/40 border border-dark-200 dark:border-dark-800 md:rounded-3xl overflow-hidden shadow-sm transition-colors duration-200"> 
       {/* Sidebar: Conversation List */}
-      <div className="w-full md:w-80 border-r border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 flex flex-col">
+      <div
+        className={`${
+          activePartnerId ? 'hidden md:flex' : 'flex'
+          } w-full md:w-80 shrink-0 border-r border-dark-200 dark:border-dark-800 bg-white dark:bg-dark-900 flex-col`}
+        >
         <div className="p-4 border-b border-dark-150 dark:border-dark-800 shrink-0">
           <h2 className="text-base font-bold text-dark-900 dark:text-white">Conversations</h2>
         </div>
-
         <div className="flex-1 overflow-y-auto divide-y divide-dark-150 dark:divide-dark-800/50">
           {loading && conversations.length === 0 ? (
             <div className="p-4"><SidebarSkeleton /></div>
@@ -208,29 +214,49 @@ export const Messages: React.FC = () => {
       </div>
 
       {/* Main Panel: Chat Window */}
-      <div className="flex-grow flex flex-col bg-white dark:bg-dark-850">
-        {activePartnerId ? (
-          <>
+      <div
+      className={`${
+        activePartnerId ? 'flex' : 'hidden md:flex'
+      } flex-1 min-w-0 flex-col bg-white dark:bg-dark-850`}
+      >
+      {activePartnerId? (
+        <>
             {/* Header */}
-      <div className="h-14 px-6 border-b border-dark-150 dark:border-dark-800 flex items-center bg-white dark:bg-dark-900 justify-between shrink-0">
-        <div>
-          <h3
-            onClick={() => handleOpenProfile(activePartnerId)}
-            className="text-sm font-bold text-dark-900 dark:text-white leading-tight cursor-pointer hover:underline"
-        >
-        {activePartnerName}
-      </h3>
-      <button
-        type="button"
-        onClick={() => handleOpenProfile(activePartnerId)}
-        className="text-[10px] font-medium text-brand-500 capitalize hover:underline"
+<div className="h-14 px-3 sm:px-6 border-b border-dark-150 dark:border-dark-800 flex items-center bg-white dark:bg-dark-900 shrink-0">
+  <button
+    type="button"
+    onClick={handleBackToConversations}
+    className="md:hidden mr-3 p-2 rounded-lg text-dark-500 hover:text-dark-900 dark:text-dark-400 dark:hover:text-white hover:bg-dark-100 dark:hover:bg-dark-800 transition"
+    aria-label="Back to conversations"
+  >
+    <ArrowLeft className="w-5 h-5" />
+  </button>
+  <div className="min-w-0">
+    <h3
+      onClick={() => {
+        if (activePartnerId) {
+          handleOpenProfile(activePartnerId);
+        }
+      }}
+      className="text-sm font-bold text-dark-900 dark:text-white leading-tight cursor-pointer hover:underline truncate"
+    >
+      {activePartnerName}
+    </h3>
+    <button
+      type="button"
+      onClick={() => {
+        if (activePartnerId) {
+          handleOpenProfile(activePartnerId);
+        }
+      }}
+      className="text-[10px] font-medium text-brand-500 capitalize hover:underline"
     >
       {activeConversation?.role} Profile
     </button>
   </div>
-</div>
+</div>       
             {/* Message Area */}
-            <div className="flex-grow p-6 overflow-y-auto space-y-4">
+            <div className="flex-1 min-h-0 p-3 sm:p-6 overflow-y-auto space-y-4">
               {activeMessages.map((msg) => {
                 const isSentByMe = user && msg.sender === user.id;
                 return (
@@ -239,7 +265,7 @@ export const Messages: React.FC = () => {
                     className={`flex ${isSentByMe ? 'justify-end' : 'justify-start'} animate-fade-in`}
                   >
                     <div
-                      className={`max-w-[70%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
+                      className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
                         isSentByMe
                           ? 'bg-brand-500 text-white rounded-tr-none shadow-md shadow-brand-500/10'
                           : 'bg-dark-100 dark:bg-dark-700 text-dark-800 dark:text-slate-100 rounded-tl-none'
@@ -266,7 +292,7 @@ export const Messages: React.FC = () => {
             {/* Input Form */}
             <form
               onSubmit={handleSendMessage}
-              className="p-4 bg-white dark:bg-dark-900 border-t border-dark-150 dark:border-dark-800 flex items-center space-x-3 shrink-0"
+              className="p-2 sm:p-4 bg-white dark:bg-dark-900 border-t border-dark-150 dark:border-dark-800 flex items-center gap-2 sm:gap-3 shrink-0"
             >
               <input
                 type="text"
