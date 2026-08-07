@@ -25,13 +25,18 @@ const smtpPort = Number(process.env.SMTP_PORT) || 587;
  */
 export const createTransporter = () => {
   // Use mock stream transporter in development when credentials are unconfigured or placeholder
-  if (!smtpUser || smtpUser.includes('your_email')) {
+  if (!isProduction && (!smtpUser || smtpUser.includes('your_email'))) {
     logger.info('Nodemailer using development stream transporter (no real SMTP configured). Email contents will be logged.');
     return nodemailer.createTransport({
       streamTransport: true,
       newline: 'unix',
       buffer: true,
     });
+  }
+
+  // Prevent silent failures in production
+  if (isProduction && !smtpUser) {
+    throw new Error('FATAL: SMTP_USER is required in production environment but was not provided.');
   }
 
   // Create live SMTP transport connection
