@@ -63,9 +63,15 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile }) => {
       navigate(`/messages?user=${targetId}`);
     }
   };
-
+  const handleOpenProfile = () => {
+    if (!targetId) return;
+  navigate(`/profile/${targetId}`);
+};
   return (
-    <div className="bg-white dark:bg-dark-800 border border-dark-200 dark:border-dark-700 p-5 rounded-2xl transition duration-200 hover:shadow-md flex flex-col justify-between h-full animate-slide-up">
+    <div
+    onClick={handleOpenProfile}
+    className="bg-white dark:bg-dark-800 border border-dark-150 dark:border-dark-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition duration-200"
+    >
       <div>
         {/* Top Info */}
         <div className="flex items-center space-x-3.5">
