@@ -16,11 +16,8 @@ import { verifyGoogleToken } from '../config/passport.js';
 import {
   registerSchema,
   loginSchema,
-  googleLoginSchema,
-  forgotPasswordSchema,
-  resetPasswordSchema
+  googleLoginSchema
 } from '../validation/joiSchemas.js';
-import { sendResetEmail } from '../utils/sendResetEmail.js';
 import logger from '../config/logger.js';
 
 /**
@@ -444,108 +441,6 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
     // Clear cookie
     clearRefreshTokenCookie(res);
     res.status(200).json({ message: 'Logged out successfully' });
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * Handles forgot password requests.
- *
- * Generates a secure single-use token, saves its SHA-256 hash in the database
- * with a 10-minute expiration, and sends an HTML reset email.
- * Always returns the same response message to prevent email enumeration attacks.
- *
- * @param {Request} req - The Express request object containing the user email.
- * @param {Response} res - The Express response object.
- * @param {NextFunction} next - The next middleware function.
- */
-export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
-  const GENERIC_RESPONSE_MESSAGE = 'If the email address exists in our system, a password reset link has been sent.';
-
-  try {
-    const { error, value } = forgotPasswordSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
-
-    const { email } = value;
-
-    const user = await User.findOne({ email });
-    if (!user) {
-      // Return 200 with generic message without exposing whether user exists
-      return res.status(200).json({ message: GENERIC_RESPONSE_MESSAGE });
-    }
-
-    // 1. Create a random raw token
-    const rawToken = crypto.randomBytes(32).toString('hex');
-
-    // 2. Create SHA-256 hash of the token to store in the database
-    const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
-
-    // 3. Save hashed token and 10-minute expiry time to DB
-    user.passwordResetToken = hashedToken;
-    user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    await user.save({ validateBeforeSave: false });
-
-    // 4. Send email containing the raw token link
-    await sendResetEmail(user.email!, rawToken);
-
-    return res.status(200).json({ message: GENERIC_RESPONSE_MESSAGE });
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * Resets a user password using a valid, unexpired reset token.
- *
- * Hashes the incoming token from the URL, finds the matching user document,
- * updates the password (triggering bcrypt hashing), and clears the reset token fields.
- *
- * @param {Request} req - The Express request object containing the URL token parameter and new password.
- * @param {Response} res - The Express response object.
- * @param {NextFunction} next - The next middleware function.
- */
-export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const token = req.params.token || req.body.token;
-    if (!token) {
-      return res.status(400).json({ message: 'Token is required' });
-    }
-
-    const { error, value } = resetPasswordSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
-
-    const { password } = value;
-
-    // Hash the token received from the URL to compare against the DB hash
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
-
-    // Find user with matching token and unexpired date
-    const user = await User.findOne({
-      passwordResetToken: hashedToken,
-      passwordResetExpires: { $gt: new Date() },
-    });
-
-    if (!user) {
-      return res.status(400).json({
-        message: 'Password reset link is invalid or has expired. Please request a new link.',
-      });
-    }
-
-    // Set new password (pre-save hook will hash it with bcrypt)
-    user.password = password;
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
-
-    await user.save();
-
-    return res.status(200).json({
-      message: 'Password updated successfully. You can now log in with your new password.',
-    });
   } catch (err) {
     next(err);
   }

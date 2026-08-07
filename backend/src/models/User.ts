@@ -23,10 +23,6 @@ export interface IUser {
   role: 'player' | 'team' | 'staff';
   /** Google OAuth subject ID for single sign-on users. */
   googleId?: string;
-  /** Secure token used for authorizing password reset operations. */
-  passwordResetToken?: string;
-  /** Expiration timestamp for the current password reset token. */
-  passwordResetExpires?: Date;
   /** Account creation timestamp (automatically managed by Mongoose). */
   createdAt: Date;
   /** Account last updated timestamp (automatically managed by Mongoose). */
@@ -83,16 +79,6 @@ const userSchema = new Schema<IUser>(
     googleId: {
       type: String,
       sparse: true,
-    },
-
-    passwordResetToken: {
-      type: String,
-      default: undefined,
-    },
-
-    passwordResetExpires: {
-      type: Date,
-      default: undefined,
     },
   },
   {
