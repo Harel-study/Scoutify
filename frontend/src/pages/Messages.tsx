@@ -15,7 +15,7 @@ import {
   setActivePartner,
 } from '../store/slices/chatSlice';
 import { useAuth } from '../context/AuthContext';
-import { useSearchParams } from 'react-router';
+import { useSearchParams, useNavigate } from 'react-router';
 import { SidebarSkeleton } from '../components/SkeletonLoader';
 import { Send, MessageSquare } from 'lucide-react';
 import { useSocket } from '../context/SocketContext';
@@ -33,6 +33,7 @@ export const Messages: React.FC = () => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const targetUserParam = searchParams.get('user');
   const { socket } = useSocket();
 
@@ -114,6 +115,10 @@ export const Messages: React.FC = () => {
     dispatch(setActivePartner(partnerId));
     dispatch(fetchMessageHistory(partnerId));
   };
+  const handleOpenProfile = (partnerId: string) => {
+    if(!partnerId) return;
+    navigate(`/profile/${partnerId}`);
+  }
 
   /**
    * Submits the new message form and dispatches the send action to the Redux store.
@@ -207,17 +212,23 @@ export const Messages: React.FC = () => {
         {activePartnerId ? (
           <>
             {/* Header */}
-            <div className="h-14 px-6 border-b border-dark-150 dark:border-dark-800 flex items-center bg-white dark:bg-dark-900 justify-between shrink-0">
-              <div>
-                <h3 className="text-sm font-bold text-dark-900 dark:text-white leading-tight">
-                  {activePartnerName}
-                </h3>
-                <span className="text-[10px] font-medium text-brand-500 capitalize">
-                  {activeConversation?.role} Profile
-                </span>
-              </div>
-            </div>
-
+      <div className="h-14 px-6 border-b border-dark-150 dark:border-dark-800 flex items-center bg-white dark:bg-dark-900 justify-between shrink-0">
+        <div>
+          <h3
+            onClick={() => handleOpenProfile(activePartnerId)}
+            className="text-sm font-bold text-dark-900 dark:text-white leading-tight cursor-pointer hover:underline"
+        >
+        {activePartnerName}
+      </h3>
+      <button
+        type="button"
+        onClick={() => handleOpenProfile(activePartnerId)}
+        className="text-[10px] font-medium text-brand-500 capitalize hover:underline"
+    >
+      {activeConversation?.role} Profile
+    </button>
+  </div>
+</div>
             {/* Message Area */}
             <div className="flex-grow p-6 overflow-y-auto space-y-4">
               {activeMessages.map((msg) => {
