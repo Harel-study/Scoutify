@@ -138,7 +138,42 @@ export const getJobDetails = async (req: AuthenticatedRequest, res: Response, ne
     next(err);
   }
 };
+export const getJobApplicants = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+      });
+    }
+    const job = await Job.findById(req.params.id);
+    if (!job) {
+      return res.status(404).json({
+        message: 'Job posting not found',
+      });
+    }
+    const isOwner = await checkJobOwnership(req.user, job);
+    if (!isOwner) {
+      return res.status(403).json({
+        message: 'You do not have permission to view these applicants',
+      });
+    }
 
+    await job.populate({
+      path: 'applications',
+      select: 'username email role',
+    });
+
+    return res.status(200).json({
+      applicants: job.applications ?? [],
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 /**
  * Determines whether the requesting user owns the specified job posting.
  *
