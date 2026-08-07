@@ -148,5 +148,6 @@ export const sendResetEmail = async (toEmail: string, rawToken: string): Promise
     if (process.env.NODE_ENV === 'development') {
       console.log(`\n[FALLBACK RESET LINK]: ${resetUrl}\n`);
     }
+    throw err;
   }
 };
