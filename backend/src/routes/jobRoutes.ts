@@ -5,7 +5,8 @@ import {
   getJobDetails,
   updateJob,
   deleteJob,
-  applyToJob
+  applyToJob,
+  getJobApplicants,
 } from '../controllers/JobController.js';
 import { authenticateJWT, authorizeRoles } from '../middleware/auth.js';
 
@@ -14,6 +15,8 @@ const router = Router();
 // Apply JWT authentication to all job endpoints
 router.use(authenticateJWT);
 
+router.get('/:id/applicants', getJobApplicants);
+router.get('/:id', getJobDetails);
 router.get('/', listJobs);
 router.post('/', authorizeRoles('team', 'staff'), createJob);
 router.get('/:id', getJobDetails);
