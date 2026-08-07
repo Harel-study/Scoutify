@@ -624,7 +624,8 @@ const isOwnProfile = !targetUserId || targetUserId === user?.id;
             )}
 
             {/* CV Upload Section */}
-            <div className="pt-4 border-t border-dark-150 dark:border-dark-700 mt-6">
+            {(profileRole === 'player' || profileRole === 'staff') && (
+              <div className="pt-4 border-t border-dark-150 dark:border-dark-700 mt-6">
               <label className="text-xs font-bold text-dark-300 block mb-2">Curriculum Vitae (CV)</label>
               
               {profile?.cvName && !deleteCv ? (
@@ -675,7 +676,8 @@ const isOwnProfile = !targetUserId || targetUserId === user?.id;
                   )}
                 </div>
               )}
-            </div>
+              </div>
+            )}
 
             <div className="pt-4 flex justify-end">
               <button
