@@ -11,7 +11,7 @@ import type { AppDispatch } from '../store';
 import { applyToJob, deleteJob, type IJob } from '../store/slices/jobSlice';
 import { useAuth } from '../context/AuthContext';
 import { MapPin, Clock, Trash2, CheckCircle2 } from 'lucide-react';
-
+import { useNavigate } from 'react-router';
 interface JobCardProps {
   /** @type {IJob} The job listing data to render, including title, description, and poster info. */
   job: IJob;
@@ -30,6 +30,7 @@ interface JobCardProps {
 export const JobCard: React.FC<JobCardProps> = ({ job }) => {
   const { user } = useAuth();
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [applied, setApplied] = useState(false);
   const [applying, setApplying] = useState(false);
 
@@ -50,7 +51,10 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
   }
 
   const isOwner = user && user.id === posterId;
-
+  const handleOpenProfile = () => {
+  if (!posterId) return;
+  navigate(`/profile/${posterId}`);
+  };
   const handleApply = async () => {
     if (!user) return;
     setApplying(true);
@@ -80,11 +84,17 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
           <h3 className="text-base font-bold text-dark-900 dark:text-white mt-1">
             {job.title}
           </h3>
-          <p className="text-xs font-semibold text-dark-500 dark:text-dark-400">
-            posted by <span className="text-dark-700 dark:text-dark-200">{posterName}</span>
+            <p className="text-xs font-semibold text-dark-500 dark:text-dark-400">
+              posted by{' '}
+            <button
+              type="button"
+              onClick={handleOpenProfile}
+              className="text-dark-700 dark:text-dark-200 font-semibold hover:underline cursor-pointer"
+            > 
+              {posterName}
+            </button>
           </p>
         </div>
-
         <div className="w-11 h-11 bg-dark-50 dark:bg-dark-900 rounded-xl flex items-center justify-center font-extrabold text-dark-500 dark:text-brand-400 shrink-0">
           {avatarInitial}
         </div>
