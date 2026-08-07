@@ -34,8 +34,9 @@ import { useParams } from 'react-router';
  */
 export const Profile: React.FC = () => {
   const { user } = useAuth();
-  const { userId } = useParams<{ userId?: string }>();
-  const isOwnProfile = !userId || userId === user?.id;
+const params = useParams<{ userId?: string; id?: string }>();
+const targetUserId = params.userId ?? params.id;
+const isOwnProfile = !targetUserId || targetUserId === user?.id;
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -97,7 +98,7 @@ export const Profile: React.FC = () => {
     try {
       const endpoint = isOwnProfile
         ? '/profiles/me'
-        : `/profiles/${userId}`;
+        : `/profiles/${targetUserId}`;
 
       const response = await api.get(endpoint);
       const data = response.data.profile;
@@ -157,7 +158,7 @@ export const Profile: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [isOwnProfile, userId, user?.role]);
+  }, [isOwnProfile, targetUserId, user?.role]);
 
   useEffect(() => {
     if (user) {
