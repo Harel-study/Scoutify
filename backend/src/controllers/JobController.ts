@@ -114,7 +114,6 @@ res.status(200).json({
     next(err);
   }
 };
-
 /**
  * Fetches the details of a specific job posting by its ID.
  *
