@@ -1,5 +1,7 @@
-import { transporter } from '../config/nodemailer.js';
+import { Resend } from 'resend';
 import logger from '../config/logger.js';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
  * Sends a password reset email containing a secure single-use token link.
@@ -10,7 +12,7 @@ import logger from '../config/logger.js';
 export const sendResetEmail = async (toEmail: string, rawToken: string): Promise<void> => {
   const clientUrl = process.env.CLIENT_URL || 'http://localhost:5000';
   const resetUrl = `${clientUrl}/reset-password/${rawToken}`;
-  const fromEmail = process.env.EMAIL_FROM || 'Scoutify Support <noreply@scoutify.com>';
+  const fromEmail = process.env.EMAIL_FROM || 'onboarding@resend.dev';
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -123,31 +125,21 @@ export const sendResetEmail = async (toEmail: string, rawToken: string): Promise
     </html>
   `;
 
-  const mailOptions = {
-    from: fromEmail,
-    to: toEmail,
-    subject: 'Reset your Scoutify password',
-    html: htmlContent,
-  };
-
   try {
-    const info = await transporter.sendMail(mailOptions);
-    logger.info(`Password reset email sent to ${toEmail}`);
-    // If using dev stream transporter, log the reset URL directly for local development testing
-    if ((info as any).message && process.env.NODE_ENV === 'development') {
-      logger.info(`[DEV EMAIL SIMULATION] Reset Link: ${resetUrl}`);
-      console.log(`\n==================================================`);
-      console.log(`[DEV EMAIL SIMULATION] Password Reset Email Sent!`);
-      console.log(`To: ${toEmail}`);
-      console.log(`Reset URL: ${resetUrl}`);
-      console.log(`==================================================\n`);
+    const { error } = await resend.emails.send({
+      from: fromEmail,
+      to: toEmail,
+      subject: 'Reset your Scoutify password',
+      html: htmlContent,
+    });
+
+    if (error) {
+      throw new Error(`Resend API Error: ${error.message}`);
     }
+
+    logger.info(`Password reset email sent to ${toEmail}`);
   } catch (err: any) {
     logger.error(`Error sending password reset email to ${toEmail}: ${err.message}`);
-    // Print reset link to console in dev mode so testing never fails due to missing SMTP
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`\n[FALLBACK RESET LINK]: ${resetUrl}\n`);
-    }
     throw err;
   }
 };
