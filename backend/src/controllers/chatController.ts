@@ -138,23 +138,25 @@ export const getConversations = async (req: AuthenticatedRequest, res: Response,
       let profile: any = null;
       let displayName = partner.username || partner.email;
       let avatar = '';
+      let subtext: string = partner.role;
 
       if (partner.role === 'player') {
         profile = await PlayerProfile.findOne({ userID: partner._id }).select('profileImage position');
         if (profile) {
           avatar = profile.profileImage || '';
-          displayName = `Athlete (${profile.position})`;
+          subtext = `Athlete (${profile.position || 'Unknown Position'})`;
         }
       } else if (partner.role === 'team') {
         profile = await Team.findOne({ userID: partner._id }).select('name city');
         if (profile) {
-          displayName = profile.name;
+          displayName = profile.name || displayName;
+          subtext = 'Team';
         }
       } else if (partner.role === 'staff') {
         profile = await StaffProfile.findOne({ userID: partner._id }).select('profileImage roleDescription');
         if (profile) {
           avatar = profile.profileImage || '';
-          displayName = `${profile.roleDescription} (Staff)`;
+          subtext = `${profile.roleDescription || 'Staff'} (Staff)`;
         }
       }
 
@@ -170,6 +172,7 @@ export const getConversations = async (req: AuthenticatedRequest, res: Response,
         email: partner.email,
         role: partner.role,
         displayName,
+        subtext,
         avatar,
         lastMessage
       });

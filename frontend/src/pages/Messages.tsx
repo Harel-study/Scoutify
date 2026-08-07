@@ -199,7 +199,7 @@ export const Messages: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] font-semibold text-brand-500 capitalize mt-0.5">{conv.role}</p>
+                    <p className="text-[10px] font-semibold text-green-500 capitalize mt-0.5">{conv.subtext || conv.role}</p>
                     {conv.lastMessage && (
                       <p className="text-[11px] text-dark-500 dark:text-dark-350 truncate mt-1">
                         {conv.lastMessage.content}
@@ -249,9 +249,9 @@ export const Messages: React.FC = () => {
           handleOpenProfile(activePartnerId);
         }
       }}
-      className="text-[10px] font-medium text-brand-500 capitalize hover:underline"
+      className="text-[10px] font-medium text-green-500 capitalize hover:underline"
     >
-      {activeConversation?.role} Profile
+      {activeConversation?.subtext || activeConversation?.role} Profile
     </button>
   </div>
 </div>       

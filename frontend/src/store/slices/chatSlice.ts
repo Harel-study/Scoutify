@@ -19,6 +19,7 @@ export interface IConversation {
   email?: string;
   role: 'player' | 'team' | 'staff';
   displayName: string;
+  subtext?: string;
   avatar: string;
   lastMessage?: {
     _id: string;
