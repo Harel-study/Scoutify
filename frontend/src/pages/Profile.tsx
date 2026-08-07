@@ -20,8 +20,9 @@ import {
   Save,
   Trash2,
   FileText,
+  MessageCircle,
 } from 'lucide-react';
-import { useParams } from 'react-router';
+import { useParams, useNavigate } from 'react-router';
 
 /**
  * Renders the profile view and editing interface.
@@ -34,6 +35,7 @@ import { useParams } from 'react-router';
  */
 export const Profile: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
 const params = useParams<{ userId?: string; id?: string }>();
 const targetUserId = params.userId ?? params.id;
 const isOwnProfile = !targetUserId || targetUserId === user?.id;
@@ -355,9 +357,21 @@ const isOwnProfile = !targetUserId || targetUserId === user?.id;
                 </>
               )}
             </div>
+            
+            {!isOwnProfile && (
+              <div className="w-full mt-6 pt-4 border-t border-dark-150 dark:border-dark-700">
+                <button
+                  onClick={() => navigate(`/messages?user=${targetUserId}`)}
+                  className="w-full flex items-center justify-center space-x-2 bg-brand-500 hover:bg-brand-600 text-white py-2.5 rounded-xl text-sm font-bold transition-colors shadow-sm"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Message User</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
-        {isOwnProfile && (
+        {isOwnProfile ? (
           <div className="md:col-span-2 bg-white dark:bg-dark-800 border border-dark-200 dark:border-dark-700 rounded-3xl p-6 shadow-sm">
             <h3 className="text-base font-bold text-dark-900 dark:text-white mb-6">Profile Settings</h3>
           <form onSubmit={handleFormSubmit} className="space-y-4 text-left">
@@ -691,7 +705,142 @@ const isOwnProfile = !targetUserId || targetUserId === user?.id;
             </div>
           </form>
         </div>
-      )}
+        ) : (
+          <div className="md:col-span-2 bg-white dark:bg-dark-800 border border-dark-200 dark:border-dark-700 rounded-3xl p-6 shadow-sm">
+            <h3 className="text-base font-bold text-dark-900 dark:text-white mb-6">Profile Details</h3>
+            <div className="space-y-6 text-left">
+              
+              {profileRole === 'player' && (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Field Position</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{playerFields.position}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Preferred Foot</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{playerFields.preferredFoot}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Height</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{playerFields.heightCm ? `${playerFields.heightCm} cm` : 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Weight</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{playerFields.weightKg ? `${playerFields.weightKg} kg` : 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Contract Status</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{playerFields.contractStatus}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Current Club</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{playerFields.currentTeam || 'None'}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Job Status</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">
+                        {playerFields.isLookingForJob ? 'Actively seeking opportunities' : 'Not looking for a job'}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-dark-300 mb-1">Biography / Career Summary</h4>
+                    <div className="text-sm text-dark-800 dark:text-white bg-dark-50 dark:bg-dark-900/50 p-4 rounded-xl border border-dark-200 dark:border-dark-700 whitespace-pre-wrap">
+                      {playerFields.bio || 'No biography provided.'}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {profileRole === 'team' && (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Club / Organization Name</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{teamFields.name}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">City / Location</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{teamFields.city || 'Not specified'}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Contact Email</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">
+                        {teamFields.email ? <a href={`mailto:${teamFields.email}`} className="text-brand-500 hover:underline">{teamFields.email}</a> : 'Not specified'}
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Recruiting Status</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">
+                        {teamFields.recruiting ? 'Actively recruiting' : 'Not currently recruiting'}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-dark-300 mb-1">Club Biography</h4>
+                    <div className="text-sm text-dark-800 dark:text-white bg-dark-50 dark:bg-dark-900/50 p-4 rounded-xl border border-dark-200 dark:border-dark-700 whitespace-pre-wrap">
+                      {teamFields.biography || 'No biography provided.'}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {profileRole === 'staff' && (
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Professional Role</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{staffFields.roleDescription || 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Years of Experience</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{staffFields.experienceYears ? `${staffFields.experienceYears} Years` : 'Not specified'}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Current Club</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">{staffFields.currentTeam || 'None'}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-dark-300 mb-1">Job Status</h4>
+                      <p className="text-sm text-dark-800 dark:text-white font-medium">
+                        {staffFields.isLookingForJob ? 'Actively seeking opportunities' : 'Not looking for a job'}
+                      </p>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-dark-300 mb-1">Biography / Career Summary</h4>
+                    <div className="text-sm text-dark-800 dark:text-white bg-dark-50 dark:bg-dark-900/50 p-4 rounded-xl border border-dark-200 dark:border-dark-700 whitespace-pre-wrap">
+                      {staffFields.bio || 'No biography provided.'}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {(profileRole === 'player' || profileRole === 'staff') && profile?.cvName && (
+                <div className="pt-4 border-t border-dark-150 dark:border-dark-700 mt-6">
+                  <h4 className="text-xs font-bold text-dark-300 mb-2">Curriculum Vitae (CV)</h4>
+                  <div className="flex items-center justify-between p-3 bg-dark-50 dark:bg-dark-900 border border-dark-200 dark:border-dark-800 rounded-xl mb-3">
+                    <div className="flex items-center space-x-3 overflow-hidden">
+                      <FileText className="w-5 h-5 text-brand-500 shrink-0" />
+                      <a href={profile.cvUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-dark-900 dark:text-white truncate hover:underline">
+                        {profile.cvName}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
