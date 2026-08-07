@@ -461,7 +461,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
  * @param {NextFunction} next - The next middleware function.
  */
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
-  const GENERIC_RESPONSE_MESSAGE = 'אם כתובת המייל קיימת במערכת, נשלח אליה קישור לאיפוס סיסמה.';
+  const GENERIC_RESPONSE_MESSAGE = 'If the email address exists in our system, a password reset link has been sent.';
 
   try {
     const { error, value } = forgotPasswordSchema.validate(req.body);
@@ -532,7 +532,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 
     if (!user) {
       return res.status(400).json({
-        message: 'קישור איפוס הסיסמה אינו תקין או שפג תוקפו. אנא בקש קישור חדש.',
+        message: 'Password reset link is invalid or has expired. Please request a new link.',
       });
     }
 
@@ -544,7 +544,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     await user.save();
 
     return res.status(200).json({
-      message: 'הסיסמה שונתה בהצלחה. כעת ניתן להתחבר עם הסיסמה החדשה.',
+      message: 'Password updated successfully. You can now log in with your new password.',
     });
   } catch (err) {
     next(err);

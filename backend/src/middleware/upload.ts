@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
 
-// 1. הגדרת אחסון בזיכרון ה-RAM
+// 1. Configure RAM memory storage
 const storage = multer.memoryStorage();
 
-// 2. רשימת סוגי הקבצים המורשים
+// 2. Allowed file MIME types list
 const ALLOWED_MIME_TYPES = [
   'image/jpeg',
   'image/png',
@@ -18,11 +18,11 @@ const ALLOWED_MIME_TYPES = [
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 
-// 3. הגדרת מנגנון העלאת הקבצים
+// 3. Configure upload middleware instance
 export const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // מגבלת 10MB
+    fileSize: 10 * 1024 * 1024, // 10MB limit
   },
 fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
@@ -34,27 +34,27 @@ fileFilter: (req: Request, file: Express.Multer.File, cb: multer.FileFilterCallb
 });
 
 /**
- * 4. מידלוור מעטפת לטיפול בשגיאות העלאה (עוצר שגיאות 400 בצורה נקייה)
+ * 4. Wrapper middleware for upload error handling (gracefully intercepts 400 upload errors)
  * 
- * @param uploadFn - מתודת ה-upload של מולטר, למשל: upload.single('file') או upload.array('files')
+ * @param uploadFn - Multer upload method, e.g. upload.single('file') or upload.array('files')
  */
 export const handleUpload = (uploadFn: any) => {
   return (req: Request, res: Response, next: NextFunction) => {
     uploadFn(req, res, (err: any) => {
-      // אם השגיאה מגיעה מ-Multer (למשל: קובץ גדול מ-10MB)
+      // If error originated from Multer (e.g. file larger than 10MB)
       if (err instanceof multer.MulterError) {
         return res.status(400).json({ 
           message: `File upload error: ${err.message}` 
         });
       } 
-      // אם השגיאה מגיעה מה-fileFilter שלנו (סוג קובץ לא נתמך)
+      // If error originated from fileFilter (unsupported file type)
       else if (err) {
         return res.status(400).json({ 
           message: err.message 
         });
       }
       
-      // הכל תקין - ממשיכים לקונטרולר
+      // All checks passed - proceed to controller
       next();
     });
   };

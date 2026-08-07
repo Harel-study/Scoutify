@@ -100,6 +100,10 @@ const userSchema = new Schema<IUser>(
   }
 );
 
+// Indexes for role-based user directory searches and OAuth lookups
+userSchema.index({ role: 1 });
+userSchema.index({ googleId: 1 }, { sparse: true });
+
 /**
  * Pre-save lifecycle middleware to securely hash plaintext passwords using bcrypt.
  *

@@ -91,6 +91,10 @@ const notificationSchema = new Schema<INotification>(
     timestamps: true,
   }
 );
+
+// Indexes for performance optimization on user notification feeds and unread counting
+notificationSchema.index({ receiver: 1, createdAt: -1 });
+notificationSchema.index({ receiver: 1, isRead: 1 });
 /**
  * Mongoose model for notifications.
  */

@@ -38,8 +38,8 @@ const LoadingContext = createContext<LoadingContextType | undefined>(undefined);
  */
 export const LoadingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string>('טוען נתונים...');
-  const [subtext, setSubtext] = useState<string | undefined>('אנא המתן רגע, המערכת מכינה את התוכן');
+  const [message, setMessage] = useState<string>('Loading data...');
+  const [subtext, setSubtext] = useState<string | undefined>('Please wait a moment while the content is prepared');
   const [delay, setDelay] = useState<number>(100);
   const [minDuration, setMinDuration] = useState<number>(900);
 

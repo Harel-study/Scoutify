@@ -43,9 +43,15 @@ const personalChatSchema = new Schema<IPersonalChat>({
         trim: true 
     }
 }, {
-    // מייצר אוטומטית את השדות createdAt ו-updatedAt כפי שנדרש בטבלה
+    // Automatically manages createdAt and updatedAt fields
     timestamps: true 
 });
+
+// Compound indexes for rapid conversation lookup and user chat history aggregation
+personalChatSchema.index({ sender: 1, receiver: 1, createdAt: 1 });
+personalChatSchema.index({ receiver: 1, sender: 1, createdAt: 1 });
+personalChatSchema.index({ sender: 1, createdAt: -1 });
+personalChatSchema.index({ receiver: 1, createdAt: -1 });
 
 const PersonalChat = model<IPersonalChat>('PersonalChat', personalChatSchema);
 

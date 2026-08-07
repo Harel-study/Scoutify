@@ -29,6 +29,6 @@ export const forgotPasswordLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     success: false,
-    message: 'יותר מדי בקשות לאיפוס סיסמה. אנא נסה שוב מאוחר יותר.'
+    message: 'Too many password reset attempts, please try again later.'
   }
 });
