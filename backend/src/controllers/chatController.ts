@@ -147,9 +147,10 @@ export const getConversations = async (req: AuthenticatedRequest, res: Response,
           subtext = `Athlete (${profile.position || 'Unknown Position'})`;
         }
       } else if (partner.role === 'team') {
-        profile = await Team.findOne({ userID: partner._id }).select('name city');
+        profile = await Team.findOne({ userID: partner._id }).select('name city profileImage');
         if (profile) {
           displayName = profile.name || displayName;
+          avatar = profile.profileImage || '';
           subtext = 'Team';
         }
       } else if (partner.role === 'staff') {

@@ -54,12 +54,14 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
   let posterName = 'Unknown Poster';
   let posterId = '';
   let avatarInitial = 'J';
+  let avatarUrl = '';
 
   if (job.profileModel === 'Team') {
     const teamProfile = job.profileId as any;
 
     posterName = teamProfile.name || 'Unknown Club';
     avatarInitial = posterName.charAt(0).toUpperCase();
+    avatarUrl = teamProfile.profileImage || '';
     posterId =
       teamProfile.userID?._id ||
       teamProfile.userID ||
@@ -168,9 +170,17 @@ export const JobCard: React.FC<JobCardProps> = ({ job }) => {
           </p>
         </div>
 
-        <div className="w-11 h-11 bg-dark-50 dark:bg-dark-900 rounded-xl flex items-center justify-center font-extrabold text-dark-500 dark:text-brand-400 shrink-0">
-          {avatarInitial}
-        </div>
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt={posterName}
+            className="w-11 h-11 rounded-xl object-cover shrink-0"
+          />
+        ) : (
+          <div className="w-11 h-11 bg-dark-50 dark:bg-dark-900 rounded-xl flex items-center justify-center font-extrabold text-dark-500 dark:text-brand-400 shrink-0">
+            {avatarInitial}
+          </div>
+        )}
       </div>
 
       <p className="text-xs text-dark-600 dark:text-dark-300 mt-4 leading-relaxed line-clamp-3">

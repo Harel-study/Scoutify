@@ -47,6 +47,7 @@ export const ProfileCard: React.FC<ProfileCardProps> = ({ profile }) => {
     name = profile.name || 'Athletic Club';
     title = 'Sports Club';
     subTitle = `${profile.city || 'Unknown Location'}`;
+    avatar = profile.profileImage || '';
     isLooking = profile.recruiting; // Map recruiting status to looking badge
     targetId = profile.userID?._id || profile.userID || profile._id || '';
   } else if (type === 'staff') {

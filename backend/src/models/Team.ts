@@ -24,6 +24,8 @@ export interface ITeam extends Document {
   biography?: string;
   /** @type {boolean} Indicates whether the team is actively looking for new players or staff. */
   recruiting: boolean;
+  /** @type {string|undefined} A URL pointing to the team's uploaded profile image / logo. */
+  profileImage?: string;
   /** @type {Date} When the team record was created. Automatically managed by Mongoose. */
   createdAt: Date;
   /** @type {Date} When the team record was last updated. Automatically managed by Mongoose. */
@@ -65,6 +67,10 @@ const teamSchema = new Schema<ITeam>({
         type: Boolean, 
         required: true, 
         default: false
+    },
+    profileImage: {
+        type: String,
+        default: ''
     },
     cvUrl: {
         type: String,

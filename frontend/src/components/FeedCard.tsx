@@ -44,6 +44,7 @@ export const FeedCard: React.FC<FeedCardProps> = ({ post }) => {
     const teamProfile = post.profileId as any;
     authorName = teamProfile.name || 'Unknown Club';
     avatarInitial = authorName.charAt(0).toUpperCase();
+    avatarUrl = teamProfile.profileImage || '';
     authorUserId = teamProfile.userID?._id || teamProfile.userID || '';
   } else if (post.profileModel === 'User') {
     const userObj = post.profileId as any;

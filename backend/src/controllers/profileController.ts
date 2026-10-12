@@ -121,9 +121,8 @@ export const updateMe = async (req: AuthenticatedRequest, res: Response, next: N
       const { error, value } = teamProfileUpdateSchema.validate(updateData);
       if (error) return res.status(400).json({ message: error.details[0].message });
 
-      // If a team profile picture is supported, we can add a logo field or map to generic logo
       if (profileImageUrl) {
-         // Teams don't currently have profileImage in schema, but we can add it later or ignore
+        value.profileImage = profileImageUrl;
       }
       if (cvFileUrl) {
         value.cvUrl = cvFileUrl;

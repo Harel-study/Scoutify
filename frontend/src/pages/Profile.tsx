@@ -261,50 +261,59 @@ const isOwnProfile = !targetUserId || targetUserId === user?.id;
           
           <div className="px-5 pb-6 text-center relative flex flex-col items-center">
             {/* Avatar upload container */}
-            {profileRole !== 'team' && (
-  <div
-    className={`relative -mt-12 mb-4 group ${
-      isOwnProfile ? 'cursor-pointer' : ''
-    }`}
-    onClick={() => {
-      if (isOwnProfile) {
-        fileInputRef.current?.click();
-      }
-    }}
-  >
-    {imagePreview ? (
-      <img
-        src={imagePreview}
-        alt="Avatar"
-        className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-dark-800 shadow-md"
-      />
-    ) : (
-      <div className="w-24 h-24 rounded-full bg-dark-700 text-dark-400 border-4 border-white dark:border-dark-800 shadow-md flex items-center justify-center font-extrabold text-2xl uppercase">
-        {(displayedUsername || '')[0]}
-      </div>
-    )}
-    {isOwnProfile && (
-      <>
-        <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-150">
-          <Camera className="w-6 h-6 text-white" />
-        </div>
+            <div
+              className={`relative mb-4 group ${
+                profileRole === 'team' ? '-mt-10' : '-mt-12'
+              } ${isOwnProfile ? 'cursor-pointer' : ''}`}
+              onClick={() => {
+                if (isOwnProfile) {
+                  fileInputRef.current?.click();
+                }
+              }}
+            >
+              {profileRole === 'team' ? (
+                imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Club logo"
+                    className="w-20 h-20 rounded-2xl object-cover border-2 border-white dark:border-dark-800 shadow-sm"
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl bg-brand-100 dark:bg-brand-900/30 text-brand-500 flex items-center justify-center font-extrabold text-2xl uppercase shadow-sm border-2 border-white dark:border-dark-800">
+                    {teamFields.name[0] || displayedUsername.charAt(0).toUpperCase()}
+                  </div>
+                )
+              ) : imagePreview ? (
+                <img
+                  src={imagePreview}
+                  alt="Avatar"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-dark-800 shadow-md"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-dark-700 text-dark-400 border-4 border-white dark:border-dark-800 shadow-md flex items-center justify-center font-extrabold text-2xl uppercase">
+                  {(displayedUsername || '')[0]}
+                </div>
+              )}
+              {isOwnProfile && (
+                <>
+                  <div
+                    className={`absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-150 ${
+                      profileRole === 'team' ? 'rounded-2xl' : 'rounded-full'
+                    }`}
+                  >
+                    <Camera className="w-6 h-6 text-white" />
+                  </div>
 
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          accept="image/*"
-          className="hidden"
-        />
-      </>
-    )}
-  </div>
-            )}
-    {profileRole === 'team' && (
-      <div className="w-20 h-20 rounded-2xl bg-brand-100 dark:bg-brand-900/30 text-brand-500 flex items-center justify-center font-extrabold text-2xl uppercase shadow-sm -mt-10 mb-4 border-2 border-white dark:border-dark-800">
-          {teamFields.name[0] || displayedUsername.charAt(0).toUpperCase()}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="hidden"
+                  />
+                </>
+              )}
             </div>
-            )}
             <h2 className="text-base font-bold text-dark-900 dark:text-white">
               {profileRole === 'team' ? teamFields.name || 'My Club' : displayedUsername}
             </h2>
