@@ -19,7 +19,8 @@ import socketService from '../services/socketService.js';
  * Creates a new job posting for a team.
  *
  * Validates the user role to ensure only teams can post jobs, then resolves
- * the team profile ID to associate with the job.
+ * the team profile ID to associate with the job. If the team is not currently
+ * marked as recruiting, its status is switched on since it now has an open listing.
  *
  * @param {AuthenticatedRequest} req - The Express request object containing user and body data.
  * @param {Response} res - The Express response object.
@@ -57,6 +58,13 @@ export const createJob = async (req: AuthenticatedRequest, res: Response, next: 
     });
 
     await job.save();
+
+    // A new open listing means the team is recruiting
+    if (!team.recruiting) {
+      team.recruiting = true;
+      await team.save();
+    }
+
     res.status(201).json({ message: 'Job posting created successfully', job });
   } catch (err) {
     next(err);
