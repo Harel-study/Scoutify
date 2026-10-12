@@ -16,10 +16,10 @@ import { jobSchema } from '../validation/joiSchemas.js';
 import socketService from '../services/socketService.js';
 
 /**
- * Creates a new job posting for a team or staff member.
+ * Creates a new job posting for a team.
  *
- * Validates the user role to ensure players cannot post jobs. If the user
- * is a team, it resolves the team profile ID to associate with the job.
+ * Validates the user role to ensure only teams can post jobs, then resolves
+ * the team profile ID to associate with the job.
  *
  * @param {AuthenticatedRequest} req - The Express request object containing user and body data.
  * @param {Response} res - The Express response object.
@@ -31,9 +31,9 @@ export const createJob = async (req: AuthenticatedRequest, res: Response, next: 
     if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
     const { id, role } = req.user;
 
-    // Business Logic: Players cannot post jobs
-    if (role === 'player') {
-      return res.status(403).json({ message: 'Players are not permitted to create job listings' });
+    // Business Logic: Only teams can post jobs
+    if (role !== 'team') {
+      return res.status(403).json({ message: 'Only teams are permitted to create job listings' });
     }
 
     const { error, value } = jobSchema.validate(req.body);
@@ -41,21 +41,14 @@ export const createJob = async (req: AuthenticatedRequest, res: Response, next: 
 
     const { title, description, city, jobType } = value;
 
-    let profileId = id;
-    let profileModel: 'User' | 'Team' = 'User';
-
-    if (role === 'team') {
-      const team = await Team.findOne({ userID: id });
-      if (!team) {
-        return res.status(400).json({ message: 'Team profile not found. Please create a team profile first.' });
-      }
-      profileId = team._id.toString();
-      profileModel = 'Team';
+    const team = await Team.findOne({ userID: id });
+    if (!team) {
+      return res.status(400).json({ message: 'Team profile not found. Please create a team profile first.' });
     }
 
     const job = new Job({
-      profileId,
-      profileModel,
+      profileId: team._id.toString(),
+      profileModel: 'Team',
       title,
       description,
       city,

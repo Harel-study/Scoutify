@@ -17,7 +17,7 @@ import { Search, Briefcase, MapPin, Plus, X } from 'lucide-react';
  * Renders the main job board page.
  *
  * Displays a list of available jobs, provides filtering options (by title, city, type),
- * and includes a modal for authorized staff/team members to create new job postings.
+ * and includes a modal for team accounts to create new job postings.
  *
  * @returns {React.ReactElement} The Jobs component.
  */
@@ -83,7 +83,7 @@ export const Jobs: React.FC = () => {
     }
   };
 
-  const isRecruiter = user && (user.role === 'team' || user.role === 'staff');
+  const isRecruiter = user?.role === 'team';
 
   return (
     <div className="flex-1 max-w-7xl mx-auto px-4 py-6 md:py-8 space-y-6">
@@ -183,7 +183,7 @@ export const Jobs: React.FC = () => {
       </div>
 
       {/* Post Job Modal */}
-      {showModal && (
+      {isRecruiter && showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-950/80 backdrop-blur-sm">
           <div className="bg-white dark:bg-dark-800 border border-dark-200 dark:border-dark-700 w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-4 animate-fade-in">
             <div className="flex justify-between items-center border-b border-dark-150 dark:border-dark-700 pb-3">

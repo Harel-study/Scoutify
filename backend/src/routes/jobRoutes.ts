@@ -18,7 +18,7 @@ router.use(authenticateJWT);
 router.get('/:id/applicants', getJobApplicants);
 router.get('/:id', getJobDetails);
 router.get('/', listJobs);
-router.post('/', authorizeRoles('team', 'staff'), createJob);
+router.post('/', authorizeRoles('team'), createJob);
 router.get('/:id', getJobDetails);
 router.put('/:id', updateJob);
 router.delete('/:id', deleteJob);
