@@ -24,7 +24,7 @@ jobs:
           node-version: '20'
 
       - name: Install backend dependencies
-        run: npm ci
+        run: npm ci --prefix ..
 
       - name: Check backend TypeScript
         run: npx tsc --noEmit
@@ -49,7 +49,7 @@ jobs:
           node-version: '20'
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm ci --prefix ..
 
       - name: Check frontend TypeScript
         run: npx tsc --noEmit
